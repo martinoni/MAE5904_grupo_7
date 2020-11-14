@@ -1,0 +1,104 @@
+---
+title: "Trabalho de Aprendizagem Estatística"
+author: "Bruno de Castro Paul Schultze, Lucas Bortolucci, Lucas Monteiro Bianchi, Luiz Afonso Glatzl Junior, Thiago Henrique Martinoni"
+date: "12/11/2020"
+output: 
+  prettydoc::html_pretty:
+    theme: cayman
+  toc: yes
+  fig_caption: yes
+  code_folding: show
+  keep_md: no
+  toc_depth: 2
+  toc_float: yes
+  number_sections: yes
+  self_contained: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+
+# Desligando a notação cientifica
+options(scipen = 999999)
+```
+
+
+
+# Preparação dos dados
+
+## Carregando pacotes
+
+Carregando pacotes do R. 
+
+```{r  include=FALSE}
+require(tidyverse)
+require(data.table)
+require(lubridate)
+```
+
+## Importando o banco de dados
+
+No código abaixo estamos importando os dados e aplicando os filtros necessárias paras as realizarmos as analises
+
+```{r}
+# setwd("C:/Users/lucas/Documents/Lucas 2020/Fiocruz/2020/Aprendizagem Estatistica em Altas Dimensoes/Trabalho")
+files <- dir() %>% 
+  data.frame() %>% 
+  filter(str_detect(.,"dados-sp-")) %>% 
+  unlist() %>% 
+  as.vector()
+
+dados <- NULL
+for(i in length(files)){
+  temp <- fread(files[i], header= TRUE, stringsAsFactors = T) %>% 
+    filter(estadoIBGE == "35") %>% 
+    filter(estado =="SÃO PAULO") %>% 
+    filter(sexo %in% c("Masculino", "Feminino")) %>% 
+    mutate(
+      dataNotificacao = as.Date(substr(dataNotificacao,1,10), fmt = "%Y-%m-%d")
+    ) %>% 
+    filter(dataNotificacao > lubridate::dmy("01-06-2020"))
+  dados <- rbind(dados,temp)
+}
+
+# Criando os sintomeas
+dados <- dados %>% 
+  mutate(
+    Assintomatico = ifelse(grepl("Assintomático",sintomas),1,0),
+    Coriza = ifelse(grepl("Coriza",sintomas),1,0),
+    Dispneia = ifelse(grepl("Dispneia",sintomas),1,0),
+    DistGustativos = ifelse(grepl("Distúrbios Gustativos",sintomas),1,0),
+    DistOlfativos = ifelse(grepl("Distúrbios Olfativos",sintomas),1,0),
+    DorDeCabeca = ifelse(grepl("Dor de Cabeça",sintomas),1,0),
+    DorDeGarganta = ifelse(grepl("Dor de Garganta",sintomas),1,0),
+    Febre = ifelse(grepl("Febre",sintomas),1,0),
+    Tosse = ifelse(grepl("Tosse",sintomas),1,0),
+    Outros = ifelse(grepl("Outros",sintomas),1,0),
+    verificacao = Coriza + Dispneia + DistGustativos + 
+      DistOlfativos + DorDeCabeca + DorDeGarganta + Febre + Tosse + Outros,
+    verificacao2 = case_when(
+      Assintomatico == 1 & verificacao >= 1 ~ 1,
+      TRUE ~ 0
+    ),
+    tipoTeste =  case_when(
+      grepl("RÁPIDO",tipoTeste) == TRUE ~ "Teste rápido",
+      grepl("RT-PCR",tipoTeste) == TRUE ~ "RT-PCR",
+      TRUE ~ "Outro"
+    )
+  ) %>% 
+  filter(verificacao2 !=1) %>% 
+  filter(tipoTeste != "Outro") %>% 
+  dplyr::select(-c(verificacao,verificacao2))
+
+dados.modelo <- dados %>% filter(tipoTeste == "RT-PCR") 
+
+# Separar os dados de RT-PCR em treinamento (75\%), validacao (25\%) e teste os de teste rapido
+set.seed(123)
+rows <- sample.int(n = nrow(dados.modelo), size = floor(.75*nrow(dados.modelo)), replace = F)
+dados.treino <- dados.modelo[rows, ]
+dados.valid  <- dados.modelo[-rows, ]
+dados.test <- dados %>% filter(tipoTeste != "RT-PCR")
+```
+
