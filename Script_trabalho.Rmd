@@ -56,7 +56,7 @@ for(i in length(files)){
     filter(estadoIBGE == "35") %>% 
     filter(estado =="SÃO PAULO") %>% 
     filter(sexo %in% c("Masculino", "Feminino")) %>% 
-    filter(tipoTeste %in% c("TESTE RÁPIDO - ANTICORPO", "TESTE RÁPIDO - ANTÍGENO", "RT-PCR")) %>% 
+    filter(resultadoTeste %in% c("Negativo", "Positivo")) %>% 
     mutate(
       dataNotificacao = as.Date(substr(dataNotificacao,1,10), fmt = "%Y-%m-%d")
     ) %>% 
@@ -77,21 +77,29 @@ dados <- dados %>%
     Febre = ifelse(grepl("Febre",sintomas),1,0),
     Tosse = ifelse(grepl("Tosse",sintomas),1,0),
     Outros = ifelse(grepl("Outros",sintomas),1,0),
-    verificacao = case_when(
-      Assintomatico == 1 & any(Coriza:Outros) == 1 ~ 1,
+    verificacao = Coriza + Dispneia + DistGustativos + 
+      DistOlfativos + DorDeCabeca + DorDeGarganta + Febre + Tosse + Outros,
+    verificacao2 = case_when(
+      Assintomatico == 1 & verificacao >= 1 ~ 1,
       TRUE ~ 0
+    ),
+    tipoTeste =  case_when(
+      grepl("RÁPIDO",tipoTeste) == TRUE ~ "Teste rápido",
+      grepl("RT-PCR",tipoTeste) == TRUE ~ "RT-PCR",
+      TRUE ~ "Outro"
     )
-  )
+  ) %>% 
+  filter(verificacao2 !=1) %>% 
+  filter(tipoTeste != "Outro") %>% 
+  dplyr::select(-c(verificacao,verificacao2))
 
-teste <- temp %>% 
-  filter(
-    verificacao == 1
-  )
+dados.modelo <- dados %>% filter(tipoTeste == "RT-PCR") 
 
-# Separar os dados em treinamento (75\%), validacao (25\%) e teste (RJ)
+# Separar os dados de RT-PCR em treinamento (75\%), validacao (25\%) e teste os de teste rapido
 set.seed(123)
-rows <- sample.int(n = nrow(dados), size = floor(.75*nrow(dados)), replace = F)
-dados.treino <- dados[rows, ]
-dados.valid  <- dados[-rows, ]
+rows <- sample.int(n = nrow(dados.modelo), size = floor(.75*nrow(dados.modelo)), replace = F)
+dados.treino <- dados.modelo[rows, ]
+dados.valid  <- dados.modelo[-rows, ]
+dados.test <- dados %>% filter(tipoTeste != "RT-PCR")
 ```
 
