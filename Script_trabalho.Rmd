@@ -57,6 +57,7 @@ for(i in length(files)){
     filter(estado =="SÃO PAULO") %>% 
     filter(sexo %in% c("Masculino", "Feminino")) %>% 
     filter(resultadoTeste %in% c("Negativo", "Positivo")) %>% 
+    filter(profissionalSaude %in% c("Não", "Sim")) %>% 
     mutate(
       dataNotificacao = as.Date(substr(dataNotificacao,1,10), fmt = "%Y-%m-%d")
     ) %>% 
@@ -67,16 +68,18 @@ for(i in length(files)){
 # Criando os sintomeas
 dados <- dados %>% 
   mutate(
-    Assintomatico = ifelse(grepl("Assintomático",sintomas),1,0),
-    Coriza = ifelse(grepl("Coriza",sintomas),1,0),
-    Dispneia = ifelse(grepl("Dispneia",sintomas),1,0),
-    DistGustativos = ifelse(grepl("Distúrbios Gustativos",sintomas),1,0),
-    DistOlfativos = ifelse(grepl("Distúrbios Olfativos",sintomas),1,0),
-    DorDeCabeca = ifelse(grepl("Dor de Cabeça",sintomas),1,0),
-    DorDeGarganta = ifelse(grepl("Dor de Garganta",sintomas),1,0),
-    Febre = ifelse(grepl("Febre",sintomas),1,0),
-    Tosse = ifelse(grepl("Tosse",sintomas),1,0),
-    Outros = ifelse(grepl("Outros",sintomas),1,0),
+    resultadoTeste = factor(resultadoTeste, levels = c("Negativo", "Positivo")),
+    profissionalSaude = factor(profissionalSaude, levels = c("Não", "Sim")),
+    Assintomatico = as.factor(ifelse(grepl("Assintomático",sintomas),1,0)),
+    Coriza = as.factor(ifelse(grepl("Coriza",sintomas),1,0)),
+    Dispneia = as.factor(ifelse(grepl("Dispneia",sintomas),1,0)),
+    DistGustativos = as.factor(ifelse(grepl("Distúrbios Gustativos",sintomas),1,0)),
+    DistOlfativos = as.factor(ifelse(grepl("Distúrbios Olfativos",sintomas),1,0)),
+    DorDeCabeca = as.factor(ifelse(grepl("Dor de Cabeça",sintomas),1,0)),
+    DorDeGarganta = as.factor(ifelse(grepl("Dor de Garganta",sintomas),1,0)),
+    Febre = as.factor(ifelse(grepl("Febre",sintomas),1,0)),
+    Tosse = as.factor(ifelse(grepl("Tosse",sintomas),1,0)),
+    Outros = as.factor(ifelse(grepl("Outros",sintomas),1,0)),
     verificacao = Coriza + Dispneia + DistGustativos + 
       DistOlfativos + DorDeCabeca + DorDeGarganta + Febre + Tosse + Outros,
     verificacao2 = case_when(
@@ -113,3 +116,4 @@ dados.test <- dados %>% filter(tipoTeste != "RT-PCR")
 Nesta seção é apresentado o conjunto de metodologias empregadas para classificar, segundo os sintomas, se a pessoa é positivo ou negativo para covid-19.
 
 ## Random forest
+
