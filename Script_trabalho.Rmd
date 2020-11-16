@@ -87,10 +87,15 @@ dados <- dados %>%
       grepl("RÁPIDO",tipoTeste) == TRUE ~ "Teste rápido",
       grepl("RT-PCR",tipoTeste) == TRUE ~ "RT-PCR",
       TRUE ~ "Outro"
-    )
+    ),
+    idade = as.integer(as.character(idade)),
+    faixaetaria = cut(idade,
+                      breaks = c(seq(0,60,10),Inf), right = F,include.lowest = T,
+                      levels = c("0 a 9", "10 a 19", "20 a 29", "30 a 39", "40 a 49", "50 a 59", ">= 60"))
   ) %>% 
   filter(verificacao2 !=1) %>% 
   filter(tipoTeste != "Outro") %>% 
+  filter(idade <= 100) %>% 
   dplyr::select(-c(verificacao,verificacao2))
 
 dados.modelo <- dados %>% filter(tipoTeste == "RT-PCR") 
@@ -103,3 +108,8 @@ dados.valid  <- dados.modelo[-rows, ]
 dados.test <- dados %>% filter(tipoTeste != "RT-PCR")
 ```
 
+# Metodologias
+
+Nesta seção é apresentado o conjunto de metodologias empregadas para classificar, segundo os sintomas, se a pessoa é positivo ou negativo para covid-19.
+
+## Random forest
