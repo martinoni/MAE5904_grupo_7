@@ -164,7 +164,7 @@ ROCR::performance(pr.train, measure = 'auc')@y.values
 ```
 
 Agora vamos escolher o threshold. \newline
-Para isso primeiro vamos definir o "custo" de um erro de forma heterogênea: um Falso Negativo terá o dobro do peso de um Falso Positivo. Isso se dá pois é pior dizer para um paciente infectado que ele não está com COVID (pois isso fará com que ele não obedeça o isolamento social e a quarentena de forma tão incisiva) do que dizer para uma pessoa não-infectada que ela está com COVID (pois isso somente fará com que ela realize exames adicionais que mostrarão que a mesma não está infectada). Não alteraremos a prevalência dado que não temos o conhecimento técnico epidemiológico para tal decisão. \newline
+Para isso primeiro vamos definir o "custo" de um erro de forma heterogênea: um Falso Negativo será maior que o peso de um Falso Positivo. Isso se dá pois é pior dizer para um paciente infectado que ele não está com COVID (pois isso fará com que ele não obedeça o isolamento social e a quarentena de forma tão incisiva) do que dizer para uma pessoa não-infectada que ela está com COVID (pois isso somente fará com que ela realize exames adicionais que mostrarão que a mesma não está infectada). Não alteraremos a prevalência dado que não temos o conhecimento técnico epidemiológico para tal decisão. \newline
 Para a escolha do threshold usaremos o critério de Youden com uma modificação proposta por Perkins e Schisterman, dado por:
 $$max(sensitivities + r \times specificities)$$
 Onde:
