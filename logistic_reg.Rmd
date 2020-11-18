@@ -1,0 +1,247 @@
+---
+title: "Trabalho de Aprendizagem Estatística"
+author: "Bruno de Castro Paul Schultze, Lucas Bortolucci, Lucas Monteiro Bianchi, Luiz Afonso Glatzl Junior, Thiago Henrique Martinoni"
+date: "12/11/2020"
+output: 
+  prettydoc::html_pretty:
+    theme: cayman
+  toc: yes
+  fig_caption: yes
+  code_folding: show
+  keep_md: no
+  toc_depth: 2
+  toc_float: yes
+  number_sections: yes
+  self_contained: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+# Desligando a notação cientifica
+options(scipen = 999999)
+```
+
+
+
+# Preparação dos dados
+
+## Carregando pacotes
+
+Carregando pacotes do R. 
+
+```{r  include=FALSE}
+require(tidyverse)
+require(data.table)
+require(lubridate)
+```
+
+## Importando o banco de dados
+
+No código abaixo estamos importando os dados e aplicando os filtros necessárias paras as realizarmos as analises
+
+```{r}
+# setwd("C:/Users/lucas/Documents/Lucas 2020/Fiocruz/2020/Aprendizagem Estatistica em Altas Dimensoes/Trabalho")
+files <- dir() %>% 
+  data.frame() %>% 
+  filter(str_detect(.,"dados-sp-")) %>% 
+  unlist() %>% 
+  as.vector()
+dados <- NULL
+for(i in length(files)){
+  temp <- fread(files[i], header= TRUE, stringsAsFactors = T) %>% 
+    filter(estadoIBGE == "35") %>% 
+    filter(estado =="SÃO PAULO") %>% 
+    filter(sexo %in% c("Masculino", "Feminino")) %>% 
+    filter(resultadoTeste %in% c("Negativo", "Positivo")) %>% 
+    filter(profissionalSaude %in% c("Não", "Sim")) %>% 
+    mutate(
+      dataNotificacao = as.Date(substr(dataNotificacao,1,10), fmt = "%Y-%m-%d")
+    ) %>% 
+    filter(dataNotificacao > lubridate::dmy("01-06-2020"))
+  dados <- rbind(dados,temp)
+}
+# Criando os sintomeas
+dados <- dados %>% 
+  mutate(
+    resultadoTeste = factor(resultadoTeste, levels = c("Negativo", "Positivo")),
+    profissionalSaude = factor(profissionalSaude, levels = c("Não", "Sim")),
+    Assintomatico = as.factor(ifelse(grepl("Assintomático",sintomas),1,0)),
+    Coriza = as.factor(ifelse(grepl("Coriza",sintomas),1,0)),
+    Dispneia = as.factor(ifelse(grepl("Dispneia",sintomas),1,0)),
+    DistGustativos = as.factor(ifelse(grepl("Distúrbios Gustativos",sintomas),1,0)),
+    DistOlfativos = as.factor(ifelse(grepl("Distúrbios Olfativos",sintomas),1,0)),
+    DorDeCabeca = as.factor(ifelse(grepl("Dor de Cabeça",sintomas),1,0)),
+    DorDeGarganta = as.factor(ifelse(grepl("Dor de Garganta",sintomas),1,0)),
+    Febre = as.factor(ifelse(grepl("Febre",sintomas),1,0)),
+    Tosse = as.factor(ifelse(grepl("Tosse",sintomas),1,0)),
+    Outros = as.factor(ifelse(grepl("Outros",sintomas),1,0)),
+    verificacao = Coriza + Dispneia + DistGustativos + 
+      DistOlfativos + DorDeCabeca + DorDeGarganta + Febre + Tosse + Outros,
+    verificacao2 = case_when(
+      Assintomatico == 1 & verificacao >= 1 ~ 1,
+      TRUE ~ 0
+    ),
+    tipoTeste =  case_when(
+      grepl("RÁPIDO",tipoTeste) == TRUE ~ "Teste rápido",
+      grepl("RT-PCR",tipoTeste) == TRUE ~ "RT-PCR",
+      TRUE ~ "Outro"
+    ),
+    idade = as.integer(as.character(idade)),
+    faixaetaria = cut(idade,
+                      breaks = c(seq(0,60,10),Inf), right = F,include.lowest = T,
+                      levels = c("0 a 9", "10 a 19", "20 a 29", "30 a 39", "40 a 49", "50 a 59", ">= 60"))
+  ) %>% 
+  filter(verificacao2 !=1) %>% 
+  filter(tipoTeste != "Outro") %>% 
+  filter(idade <= 100) %>% 
+  dplyr::select(-c(verificacao,verificacao2))
+dados.modelo <- dados %>% filter(tipoTeste == "RT-PCR") 
+dados.modelo <- dados.modelo[order(as.Date(dados.modelo$dataNotificacao, format="%Y-%m-%d")),]
+index_max <- (3*nrow(dados.modelo))%/%4 + 1
+dados.treino <- dados.modelo[1:index_max]
+dados.valid <- dados.modelo[(index_max+1):nrow(dados.modelo)]
+# Separar os dados de RT-PCR em treinamento (75\%), validacao (25\%) e teste os de teste rapido
+set.seed(123)
+rows <- sample.int(n = nrow(dados.modelo), size = floor(.75*nrow(dados.modelo)), replace = F)
+dados.test <- dados %>% filter(tipoTeste != "RT-PCR")
+```
+
+# Metodologias
+
+Nesta seção é apresentado o conjunto de metodologias empregadas para classificar, segundo os sintomas, se a pessoa é positivo ou negativo para covid-19.
+
+## Random forest
+
+## Regressão Logística
+
+Primeiro vamos considerar o modelo completo contendo como variáveis explicativas:
+
+* _profissionalSaúde_
+* Idade
+* Sexo
+* Assintomático
+* Sintomas (uma variável indicadora para cada)
+
+```{r}
+treino = dados.treino[, c(6, 12, 14, 27, 31:40)]
+treino$resultadoTeste = relevel(treino$resultadoTeste, ref = 'Negativo')
+fit.rl = glm(resultadoTeste ~ ., family = binomial,data = treino)
+summary(fit.rl)
+```
+
+Note que todas as variáveis se mostraram significativas a um nível de $5\%$, então serão mantidas. Aqui vamos também checar por multicolinearidade.
+
+```{r}
+library(car)
+vif(fit.rl)
+```
+
+Notemos que não há evidências de multicolinearidade usando os critérios usuais (VIF maiores que 5). \newline
+Com o modelo definido, partiremos então para a definição do ponto de corte. Para isso levaremos em conta principalmente Sensibilidade, mas também Especificidade e Acurácia Total.
+\newline
+Para definir o ponto de corte utilizaremos os dados de treino mesmo.
+
+```{r}
+pred.rl.treino = predict(fit.rl, newdata = treino[,-2], type = 'response')
+```
+
+Abaixo podemos ver a curva ROC:
+
+```{r}
+library(ROCR)
+pr.train = ROCR::prediction(pred.rl.treino, dados.treino$resultadoTeste)
+pr.train.perf = ROCR::performance(pr.train, measure = 'tpr', x.measure = 'fpr')
+plot(pr.train.perf)
+abline(a=0.0, b= 1.0, lty = 2)
+```
+
+Vamos checar também a área embaixo da curva (AUC) que criamos anteriormente.
+
+```{r}
+ROCR::performance(pr.train, measure = 'auc')@y.values
+```
+
+Agora vamos escolher o threshold. \newline
+Para isso primeiro vamos definir o "custo" de um erro de forma heterogênea: um Falso Negativo terá o dobro do peso de um Falso Positivo. Isso se dá pois é pior dizer para um paciente infectado que ele não está com COVID (pois isso fará com que ele não obedeça o isolamento social e a quarentena de forma tão incisiva) do que dizer para uma pessoa não-infectada que ela está com COVID (pois isso somente fará com que ela realize exames adicionais que mostrarão que a mesma não está infectada). Não alteraremos a prevalência dado que não temos o conhecimento técnico epidemiológico para tal decisão. \newline
+Para a escolha do threshold usaremos o critério de Youden com uma modificação proposta por Perkins e Schisterman, dado por:
+$$max(sensitivities + r \times specificities)$$
+Onde:
+$$r = \frac{1 - prevalence}{cost * prevalence}$$
+Sendo _cost_ o custo relativo de um Falso Negativo comparado com o de um Falso Positivo e prevalence número de Positivos dividido pelo total.
+```{r}
+prop.table(table(dados.treino$resultadoTeste))
+```
+
+```{r}
+custo = 3
+prevalencia = 0.3368767
+library(pROC)
+rl.ROC <- roc(dados.treino$resultadoTeste, pred.rl.treino,plot=FALSE)
+thre = as.numeric(coords(rl.ROC, "best", ret = "threshold", best.weights = c(cost = custo, prevalence =  prevalencia)))
+thre
+```
+
+Agora, com o _threshold_ definido, veremos então a matriz de confusão com relação aos dados de treino.
+
+```{r}
+library(caret)
+rl.treino = as.factor(ifelse(pred.rl.treino > thre,'Positivo',"Negativo"))
+confusionMatrix(rl.treino, reference = dados.treino$resultadoTeste, positive = 'Positivo')
+```
+
+
+O modelo conseguiu classificar corretamente $83\%$ (sensibilidade) das pessoas que tiveram resultado positivo no exame, e classificou corretamente $34\%$ das pessoas que tiveram resultado negativo. \newline
+Veremos também as métricas para os dados de validação, para tentar observar a performance do modelo em dados desconhecidos anteriormente.
+
+```{r}
+val = dados.valid[, c(6, 14, 27, 31:40)]
+pred.rl.val = predict(fit.rl, newdata = val, type = 'response')
+rl.val <- as.factor(ifelse(pred.rl.val > thre,"Positivo","Negativo"))
+confusionMatrix(rl.val, reference = dados.valid$resultadoTeste, positive = 'Positivo')
+```
+
+
+
+A sensibilidade novamente é de $78\%$ enquanto a especificidade é de $44\%$, uma performance parecida com a dos dados de treino.
+Por fim, veremos o desempenho do modelo nos dados de treino, que usam testes menos poderosos e, portanto, podem apresentar erros.
+
+```{r}
+teste = dados.test[, c(6, 14, 27, 31:40)]
+pred.rl.test = predict(fit.rl, newdata = teste, type = 'response')
+rl.test = as.factor(ifelse(pred.rl.test > thre,'Positivo',"Negativo"))
+confusionMatrix(rl.test, reference = dados.test$resultadoTeste, positive = 'Positivo')
+```
+
+Notemos, então, que a sensibilidade nos dados de teste foi de $53\%$ e a especificidade de $67\%$. Tal resultado pode ter dois significados, e não temos informações suficientes para ver qual está certo ou se ambos estão corretos:
+
+* O modelo tem uma variância grande quanto às métricas analisadas em dados não antes vistos
+
+* Os testes utilizados no exame erraram e na verdade o resultado correto é o predito pelo modelo
+
+A proporção prevista para a base de testes foi:
+
+```{r}
+prop.table(table(rl.test))
+```
+
+Por fim, criaremos um vetor que resume as métricas utilizadas nos três conjuntos de dados.
+
+```{r}
+Acurácia = c(50.86, 53.51, 64.61)
+Sensibilidade = c(83.12, 77.73, 52.68)
+Especificidade = c(34.47, 43.81, 67.44)
+med_rl = cbind(Acurácia, Sensibilidade, Especificidade)
+rownames(med_rl) = c('Treino', 'Validação', 'Teste')
+med_rl
+```
+
+E o tempo de execução do _fit_ é:
+
+```{r}
+library(tictoc)
+tic('RL fitting')
+fit.rl2 = glm(resultadoTeste ~ ., family = binomial,data = treino)
+toc()
+```
