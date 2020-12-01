@@ -374,6 +374,6 @@ h2o.shutdown(prompt=FALSE)
 # Metricas com os dados da validacao
 pred_class <- predict.rforest %>% pull(predict)
 table(pred_class)[2]/length(pred_class)
-confusionMatrix(pred_class, dados.valid$resultadoTeste, positive = "Positivo")
+confusionMatrix(pred_class, dados.test$resultadoTeste, positive = "Positivo")
 ```
 
