@@ -18,13 +18,11 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, results='hide')
 
 # Desligando a notação cientifica
 options(scipen = 999999)
 ```
-
-
 
 # Preparação dos dados
 
@@ -53,35 +51,43 @@ require(tictoc)
 
 ## Importando o banco de dados
 
-No código abaixo estamos importando os dados e aplicando os filtros necessárias paras as realizarmos as analises
+No código abaixo estamos importando os dados e aplicando os filtros necessárias paras as realizarmos as analises. Os dados utilizados são referentes ao Estado de São Paulo e podem ser baixados em [OpenDataSus](https://opendatasus.saude.gov.br/dataset/casos-nacionais).
 
 ```{r}
-# setwd("C:/Users/lucas/Documents/Lucas 2020/Fiocruz/2020/Aprendizagem Estatistica em Altas Dimensoes/Trabalho")
-files <- dir() %>% 
-  data.frame() %>% 
-  filter(str_detect(.,"dados-sp-")) %>% 
-  unlist() %>% 
-  as.vector()
+# Esse chunk é apenas para criar o banco de dados
+# como demora um pouco, o resultado dessa saida foi salvo em dados.Rdata
 
-dados <- NULL
-for(i in length(files)){
-  temp <- fread(files[i], header= TRUE, stringsAsFactors = T) %>% 
-    filter(estadoIBGE == "35") %>% 
-    filter(estado =="SÃO PAULO") %>% 
-    filter(sexo %in% c("Masculino", "Feminino")) %>% 
-    filter(resultadoTeste %in% c("Negativo", "Positivo")) %>% 
-    filter(profissionalSaude %in% c("Não", "Sim")) %>% 
-    mutate(
-      dataNotificacao = as.Date(substr(dataNotificacao,1,10), fmt = "%Y-%m-%d")
-    ) %>% 
-    filter(dataNotificacao > lubridate::dmy("01-06-2020"))
-  dados <- rbind(dados,temp)
-}
+# files <- dir() %>% 
+#   data.frame() %>% 
+#   filter(str_detect(.,"dados-sp-")) %>% 
+#   unlist() %>% 
+#   as.vector()
+# 
+# dados <- NULL
+# for(i in length(files)){
+#   temp <- fread(files[i], header= TRUE, stringsAsFactors = T) %>% 
+#     filter(estadoIBGE == "35") %>% 
+#     filter(estado =="SÃO PAULO") %>% 
+#     filter(sexo %in% c("Masculino", "Feminino")) %>% 
+#     filter(resultadoTeste %in% c("Negativo", "Positivo")) %>% 
+#     filter(profissionalSaude %in% c("Não", "Sim")) %>% 
+#     mutate(
+#       dataNotificacao = as.Date(substr(dataNotificacao,1,10), fmt = "%Y-%m-%d")
+#     ) %>% 
+#     filter(dataNotificacao > lubridate::dmy("01-06-2020"))
+#   dados <- rbind(dados,temp)
+# }
+# save(dados, file= "dados.Rdata")
+```
+
+
+```{r}
+load("dados.Rdata")
 
 # Criando os sintomeas
 dados <- dados %>% 
   mutate(
-    resultadoTeste = factor(resultadoTeste, levels = c("Negativo", "Positivo")),
+    resultadoTeste = factor(resultadoTeste, levels = c("Positivo", "Negativo")),
     profissionalSaude = factor(profissionalSaude, levels = c("Não", "Sim")),
     Assintomatico = as.factor(ifelse(grepl("Assintomático",sintomas),1,0)),
     Coriza = as.factor(ifelse(grepl("Coriza",sintomas),1,0)),
@@ -240,7 +246,7 @@ Abaixo podemos ver a curva ROC:
 
 ```{r}
 pr.train = ROCR::prediction(pred.rl.treino, dados.treino$resultadoTeste)
-pr.train.perf = ROCR::performance(pr.train, measure = 'tpr', x.measure = 'fpr')
+pr.train.perf = ROCR::performance(pr.train, measure = 'fpr', x.measure = 'tpr')
 plot(pr.train.perf)
 abline(a=0.0, b= 1.0, lty = 2)
 ```
@@ -328,14 +334,13 @@ E o tempo de execução do _fit_ é:
 
 ```{r}
 tic('RL fitting')
-fit.rl2 = glm(resultadoTeste ~ ., family = binomial,data = treino)
+fit.rl2 = glm(resultadoTeste ~ ., family = binomial,data = dados.treino)
 toc()
 ```
 
 ## Random forest
 
-```{r}
-
+```{r, message = F}
 #h2o.removeAll()
 localH2O <- h2o.init(nthreads = -1)
 h2o.init()
@@ -351,29 +356,40 @@ rforest.model.h2o <- h2o.randomForest(y=1, x=c(2,4,7:13),
                                       validation_frame = valid.h2o,
                                       ntrees = 1000, mtries = 3, max_depth = 4, seed = 1122)
 end <- Sys.time()
+
 print(paste0("Time spent was: ",round(end-ini,2)))
-
-# Performance
-h2o.performance(rforest.model.h2o)
-
-# Summary
-#summary(rforest.model.h2o)
-
-#check variable importance
-h2o.varimp(rforest.model.h2o)
-
-#validating model
-predict.rforest <- as.data.frame(h2o.predict(rforest.model.h2o, test.h2o))
-
-table(predict.rforest$predict)[2]/nrow(predict.rforest)
-
-#h2o.download_mojo(rforest.model.h2o, getwd(), FALSE)
-
-h2o.shutdown(prompt=FALSE)
-
-# Metricas com os dados da validacao
-pred_class <- predict.rforest %>% pull(predict)
-table(pred_class)[2]/length(pred_class)
-confusionMatrix(pred_class, dados.test$resultadoTeste, positive = "Positivo")
 ```
 
+```{r, echo = F}
+# Metricas para o conjunto de treino
+predict.rforest <- as.data.frame(h2o.predict(rforest.model.h2o, train.h2o))
+pred_class <- predict.rforest %>% pull(predict)
+matrix_treino <- confusionMatrix(pred_class, dados.treino$resultadoTeste, positive = "Positivo")
+
+# Metricas com os dados da validacao
+predict.rforest <- as.data.frame(h2o.predict(rforest.model.h2o, valid.h2o))
+pred_class <- predict.rforest %>% pull(predict)
+matrix_valid <- confusionMatrix(pred_class, dados.valid$resultadoTeste, positive = "Positivo")
+
+# Metricas com os dados da teste
+predict.rforest <- as.data.frame(h2o.predict(rforest.model.h2o, test.h2o))
+pred_class <- predict.rforest %>% pull(predict)
+matrix_teste <- confusionMatrix(pred_class, dados.test$resultadoTeste, positive = "Positivo")
+
+# desativando o H2O
+h2o.shutdown(prompt=FALSE)
+```
+
+A tabela abaixo apresenta as métricas obtidas com o modelo Random Forest.
+
+```{r}
+Acurácia = c(49.98, 49.71, 42.45)
+Sensibilidade = c(81.39, 81.44, 79.31)
+Especificidade = c(33.27, 33.19, 29.67)
+med_rl = cbind(Acurácia, Sensibilidade, Especificidade)
+rownames(med_rl) = c('Treino', 'Validação', 'Teste')
+med_rl %>% 
+  knitr::kable(caption = "Métricas de qualidade do modelo Random Forest", format = "html") %>%
+  kableExtra::kable_styling() %>%
+  kableExtra::kable_classic_2(full_width = F) 
+```
