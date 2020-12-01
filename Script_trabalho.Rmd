@@ -36,6 +36,19 @@ Carregando pacotes do R.
 require(tidyverse)
 require(data.table)
 require(lubridate)
+require(tableone)
+require(Gmisc)
+require(kableExtra)
+require(randomForest)
+require(caTools)
+require(caret)
+require(doParallel)
+require(MASS)
+require(h2o)
+require(car)
+require(ROCR)
+require(pROC)
+require(tictoc)
 ```
 
 ## Importando o banco de dados
@@ -80,8 +93,9 @@ dados <- dados %>%
     Febre = as.factor(ifelse(grepl("Febre",sintomas),1,0)),
     Tosse = as.factor(ifelse(grepl("Tosse",sintomas),1,0)),
     Outros = as.factor(ifelse(grepl("Outros",sintomas),1,0)),
-    verificacao = Coriza + Dispneia + DistGustativos + 
-      DistOlfativos + DorDeCabeca + DorDeGarganta + Febre + Tosse + Outros,
+    verificacao = 
+      as.numeric(Coriza) + as.numeric(Dispneia) + as.numeric(DistGustativos) + 
+      as.numeric(DistOlfativos) + as.numeric(DorDeCabeca) + as.numeric(DorDeGarganta) + as.numeric(Febre) + as.numeric(Tosse) + as.numeric(Outros),
     verificacao2 = case_when(
       Assintomatico == 1 & verificacao >= 1 ~ 1,
       TRUE ~ 0
@@ -101,19 +115,265 @@ dados <- dados %>%
   filter(idade <= 100) %>% 
   dplyr::select(-c(verificacao,verificacao2))
 
-dados.modelo <- dados %>% filter(tipoTeste == "RT-PCR") 
+# Selecionando apenas as informações que serão utilizadas
+dados.modelo <- dados %>% 
+  filter(tipoTeste == "RT-PCR") %>% 
+  dplyr::select(resultadoTeste, sexo, faixaetaria, idade,
+                Assintomatico, Coriza, Dispneia , DistGustativos, 
+                DistOlfativos, DorDeCabeca, DorDeGarganta, 
+                Febre, Tosse, Outros, profissionalSaude)
 
 # Separar os dados de RT-PCR em treinamento (75\%), validacao (25\%) e teste os de teste rapido
 set.seed(123)
 rows <- sample.int(n = nrow(dados.modelo), size = floor(.75*nrow(dados.modelo)), replace = F)
 dados.treino <- dados.modelo[rows, ]
 dados.valid  <- dados.modelo[-rows, ]
-dados.test <- dados %>% filter(tipoTeste != "RT-PCR")
+dados.test <- dados %>% 
+  filter(tipoTeste != "RT-PCR") %>% 
+  dplyr::select(resultadoTeste, sexo, municipio, faixaetaria, idade,
+                Assintomatico, Coriza, Dispneia , DistGustativos, 
+                DistOlfativos, DorDeCabeca, DorDeGarganta, 
+                Febre, Tosse, Outros, profissionalSaude)
+
+# Apgando objetos desnecessarios
+rm(dados, dados.modelo, files, rows, temp)
 ```
+
+
+```{r}
+fatores <- colnames(dados.treino)[c(1:2,7:16)]
+
+variaveis <- colnames(dados.treino)[c(2,5,7:16)]
+
+## Criando a tabela 1 - Treino
+tableOne.treino <- CreateTableOne(vars = variaveis, strata = "resultadoTeste", data = dados.treino, factorVars = fatores, addOverall = T)
+tabela1.treino <- print(tableOne.treino, showAllLevels = T, test = F, catDigits = 2,printToggle = F)
+```
+
+A tabela abaixo apresenta as características e sintomas dos individuos que integram o conjunto de dados de treinamento.
+
+```{r}
+tabela1.treino %>% 
+  knitr::kable(caption = "Estatística descritiva para cada características e sintomas dos indivíduos que compõem o conjunto de treinamento.", format = "html") %>%
+  kableExtra::kable_styling() %>%
+  kableExtra::kable_classic_2(full_width = F) 
+```
+
+
+```{r}
+## Criando a tabela 1 - Validacao
+tableOne.valid <- CreateTableOne(vars = variaveis, strata = "resultadoTeste", data = dados.valid, factorVars = fatores, addOverall = T)
+tabela1.valid <- print(tableOne.valid, showAllLevels = T, test = F, catDigits = 2,printToggle = F)
+```
+
+A tabela abaixo apresenta as características e sintomas dos individuos que integram o conjunto de dados de validação. É possivel notar a semelhança com os valores obtidos na tabela anterior para o conjunto de treinamento, ressaltando que a aleatorização foi devidamente realizada.
+
+```{r}
+tabela1.valid %>% 
+  knitr::kable(caption = "Estatística descritiva para cada características e sintomas dos indivíduos que compõem o conjunto de validação.", format = "html") %>%
+  kableExtra::kable_styling() %>%
+  kableExtra::kable_classic_2(full_width = F) 
+```
+
+A tabela abaixo apresenta os "resultados" obtidos através do uso do teste rápido. É importante ressaltar que mesmo tendo os "resultados" para o banco de teste, este trabalho desconsidera essa informação, visto que este tipo de teste é menos confiavel que o teste RT-PCR. De toda forma, essa informação é relevante para comparar com o cenário onde todos os individuos do banco teste teriam realizado o RT-PCR ao invés do teste rápido, permitindo desta forma, obter uma estimativa do quanto o teste rápido, possívelmente, submestiou os casos positivos de covid-19.
+
+```{r}
+prop.table(table(dados.test$resultadoTeste)) %>% 
+  knitr::kable(caption = "Proporção dos resultados obtidos utilizando o teste rápido para Covid-19 (banco teste).", format = "html") %>%
+  kableExtra::kable_styling() %>%
+  kableExtra::kable_classic_2(full_width = F) 
+```
+
+
+```{r}
+# Removendo os assintomaticos do conjunto treinamento, validação e teste
+# pois essa variavel é colinear quando considerados todos os demais sintomas
+dados.treino <- dados.treino %>% dplyr::select(-Assintomatico)
+dados.valid  <-dados.valid %>% dplyr::select(-Assintomatico)
+dados.test <- dados.test %>% dplyr::select(-Assintomatico)
+```
+
 
 # Metodologias
 
 Nesta seção é apresentado o conjunto de metodologias empregadas para classificar, segundo os sintomas, se a pessoa é positivo ou negativo para covid-19.
 
+Foram utilizados os seguintes métodos:
+* Regressão Logistica
+* Random Forest
+* Suporte Vector Machine
+* Redes Neurais Artificiais
+
+## Regressão Logística
+
+Primeiro vamos considerar o modelo completo contendo como variáveis explicativas:
+
+* _profissionalSaúde_
+* Idade
+* Sexo
+* Assintomático
+* Sintomas (uma variável indicadora para cada)
+
+```{r}
+#treino = dados.treino[, c(6, 12, 14, 27, 31:40)]
+#treino$resultadoTeste = relevel(treino$resultadoTeste, ref = 'Negativo')
+fit.rl = glm(resultadoTeste ~ ., family = binomial,data = dados.treino)
+summary(fit.rl)
+```
+
+Note que todas as variáveis se mostraram significativas a um nível de $5\%$, então serão mantidas. Aqui vamos também checar por multicolinearidade.
+
+```{r}
+vif(fit.rl)
+```
+
+Notemos que não há evidências de multicolinearidade usando os critérios usuais (VIF maiores que 5). \newline
+Com o modelo definido, partiremos então para a definição do ponto de corte. Para isso levaremos em conta principalmente Sensibilidade, mas também Especificidade e Acurácia Total.
+\newline
+Para definir o ponto de corte utilizaremos os dados de treino mesmo.
+
+```{r}
+pred.rl.treino = predict(fit.rl, newdata = dados.treino %>% dplyr::select(-resultadoTeste), type = 'response')
+```
+
+Abaixo podemos ver a curva ROC:
+
+```{r}
+pr.train = ROCR::prediction(pred.rl.treino, dados.treino$resultadoTeste)
+pr.train.perf = ROCR::performance(pr.train, measure = 'tpr', x.measure = 'fpr')
+plot(pr.train.perf)
+abline(a=0.0, b= 1.0, lty = 2)
+```
+
+Vamos checar também a área embaixo da curva (AUC) que criamos anteriormente.
+
+```{r}
+ROCR::performance(pr.train, measure = 'auc')@y.values
+```
+
+Agora vamos escolher o threshold. \newline
+Para isso primeiro vamos definir o "custo" de um erro de forma heterogênea: um Falso Negativo será maior que o peso de um Falso Positivo. Isso se dá pois é pior dizer para um paciente infectado que ele não está com COVID (pois isso fará com que ele não obedeça o isolamento social e a quarentena de forma tão incisiva) do que dizer para uma pessoa não-infectada que ela está com COVID (pois isso somente fará com que ela realize exames adicionais que mostrarão que a mesma não está infectada). Não alteraremos a prevalência dado que não temos o conhecimento técnico epidemiológico para tal decisão. \newline
+Para a escolha do threshold usaremos o critério de Youden com uma modificação proposta por Perkins e Schisterman, dado por:
+$$max(sensitivities + r \times specificities)$$
+Onde:
+$$r = \frac{1 - prevalence}{cost * prevalence}$$
+Sendo _cost_ o custo relativo de um Falso Negativo comparado com o de um Falso Positivo e prevalence número de Positivos dividido pelo total.
+```{r}
+prop.table(table(dados.treino$resultadoTeste))
+```
+
+```{r}
+custo = 3
+prevalencia = 0.3368767
+
+rl.ROC <- roc(dados.treino$resultadoTeste, pred.rl.treino,plot=FALSE)
+thre = as.numeric(coords(rl.ROC, "best", ret = "threshold", best.weights = c(cost = custo, prevalence =  prevalencia)))
+thre
+```
+
+Agora, com o _threshold_ definido, veremos então a matriz de confusão com relação aos dados de treino.
+
+```{r}
+rl.treino = as.factor(ifelse(pred.rl.treino > thre,'Positivo',"Negativo"))
+confusionMatrix(rl.treino, reference = dados.treino$resultadoTeste, positive = 'Positivo')
+```
+
+O modelo conseguiu classificar corretamente $83\%$ (sensibilidade) das pessoas que tiveram resultado positivo no exame, e classificou corretamente $34\%$ das pessoas que tiveram resultado negativo. \newline
+Veremos também as métricas para os dados de validação, para tentar observar a performance do modelo em dados desconhecidos anteriormente.
+
+```{r}
+#val = dados.valid[, c(6, 14, 27, 31:40)]
+pred.rl.val = predict(fit.rl, newdata = dados.valid, type = 'response')
+rl.val <- as.factor(ifelse(pred.rl.val > thre,"Positivo","Negativo"))
+confusionMatrix(rl.val, reference = dados.valid$resultadoTeste, positive = 'Positivo')
+```
+
+A sensibilidade novamente é de $78\%$ enquanto a especificidade é de $44\%$, uma performance parecida com a dos dados de treino.
+Por fim, veremos o desempenho do modelo nos dados de treino, que usam testes menos poderosos e, portanto, podem apresentar erros.
+
+```{r}
+#teste = dados.test[, c(6, 14, 27, 31:40)]
+pred.rl.test = predict(fit.rl, newdata = dados.test %>% dplyr::select(-resultadoTeste), type = 'response')
+rl.test = as.factor(ifelse(pred.rl.test > thre,'Positivo',"Negativo"))
+confusionMatrix(rl.test, reference = dados.test$resultadoTeste, positive = 'Positivo')
+```
+
+Notemos, então, que a sensibilidade nos dados de teste foi de $53\%$ e a especificidade de $67\%$. Tal resultado pode ter dois significados, e não temos informações suficientes para ver qual está certo ou se ambos estão corretos:
+
+* O modelo tem uma variância grande quanto às métricas analisadas em dados não antes vistos
+
+* Os testes utilizados no exame erraram e na verdade o resultado correto é o predito pelo modelo
+
+A proporção prevista para a base de testes foi:
+
+```{r}
+prop.table(table(rl.test))
+```
+
+Por fim, criaremos um vetor que resume as métricas utilizadas nos três conjuntos de dados.
+
+```{r}
+Acurácia = c(50.86, 53.51, 64.61)
+Sensibilidade = c(83.12, 77.73, 52.68)
+Especificidade = c(34.47, 43.81, 67.44)
+med_rl = cbind(Acurácia, Sensibilidade, Especificidade)
+rownames(med_rl) = c('Treino', 'Validação', 'Teste')
+med_rl %>% 
+  knitr::kable(caption = "Métricas de qualidade do modelo logistico.", format = "html") %>%
+  kableExtra::kable_styling() %>%
+  kableExtra::kable_classic_2(full_width = F) 
+```
+
+E o tempo de execução do _fit_ é:
+
+```{r}
+tic('RL fitting')
+fit.rl2 = glm(resultadoTeste ~ ., family = binomial,data = treino)
+toc()
+```
+
 ## Random forest
+
+```{r}
+
+#h2o.removeAll()
+localH2O <- h2o.init(nthreads = -1)
+h2o.init()
+
+# Criando os conjuntos no padrao H2o
+train.h2o <- as.h2o(dados.treino)
+valid.h2o <- as.h2o(dados.valid)
+test.h2o <- as.h2o(dados.test)
+
+ini <- Sys.time()
+rforest.model.h2o <- h2o.randomForest(y=1, x=c(2,4,7:13),
+                                      training_frame = train.h2o,
+                                      validation_frame = valid.h2o,
+                                      ntrees = 1000, mtries = 3, max_depth = 4, seed = 1122)
+end <- Sys.time()
+print(paste0("Time spent was: ",round(end-ini,2)))
+
+# Performance
+h2o.performance(rforest.model.h2o)
+
+# Summary
+#summary(rforest.model.h2o)
+
+#check variable importance
+h2o.varimp(rforest.model.h2o)
+
+#validating model
+predict.rforest <- as.data.frame(h2o.predict(rforest.model.h2o, test.h2o))
+
+table(predict.rforest$predict)[2]/nrow(predict.rforest)
+
+#h2o.download_mojo(rforest.model.h2o, getwd(), FALSE)
+
+h2o.shutdown(prompt=FALSE)
+
+# Metricas com os dados da validacao
+pred_class <- predict.rforest %>% pull(predict)
+table(pred_class)[2]/length(pred_class)
+confusionMatrix(pred_class, dados.valid$resultadoTeste, positive = "Positivo")
+```
 
