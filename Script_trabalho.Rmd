@@ -240,6 +240,7 @@ Para esse estudo, ao invés de considerarmos o "individuo ter ou não ter a doen
 Primeiro vamos considerar o modelo completo contendo como variáveis explicativas:
 
 * _profissionalSaúde_
+* Faixa Etária
 * Idade
 * Sexo
 * Assintomático
@@ -252,19 +253,25 @@ fit.rl = glm(resultadoTeste ~ ., family = binomial,data = dados.treino)
 summary(fit.rl)
 ```
 
-Note que todas as variáveis se mostraram significativas a um nível de $5\%$, então serão mantidas. Aqui vamos também checar por multicolinearidade.
+Note que tirando profissionalSaude, todas as variáveis se mostraram significativas a um nível de $5\%$, então serão mantidas (manteremos profissional de saúde pois sua retirada não muda as métricas, e pode ser uma informação útil). Aqui vamos também checar por multicolinearidade.
 
 ```{r}
 vif(fit.rl)
 ```
 
-Notemos que não há evidências de multicolinearidade usando os critérios usuais (VIF maiores que 5). \newline
+Notemos que há evidências de multicolinearidade usando os critérios usuais (VIF maiores que 5), então retiraremos _idade_ do modelo. \newline
+
+```{r}
+fit.rl = glm(resultadoTeste ~ ., family = binomial,data = subset(dados.treino, select = -idade))
+summary(fit.rl)
+```
+
 Com o modelo definido, partiremos então para a definição do ponto de corte. Para isso levaremos em conta principalmente Sensibilidade, mas também Especificidade e Acurácia Total.
 \newline
 Para definir o ponto de corte utilizaremos os dados de treino mesmo.
 
 ```{r}
-pred.rl.treino = predict(fit.rl, newdata = dados.treino %>% dplyr::select(-resultadoTeste), type = 'response')
+pred.rl.treino = predict(fit.rl, newdata = dados.treino %>% dplyr::select(-c('resultadoTeste', 'idade')), type = 'response')
 ```
 
 Abaixo podemos ver a curva ROC:
@@ -295,8 +302,7 @@ prop.table(table(dados.treino$resultadoTeste))
 
 ```{r}
 custo = 3
-prevalencia = 0.3368767
-
+prevalencia = 0.347205
 rl.ROC <- roc(dados.treino$resultadoTeste, pred.rl.treino,plot=FALSE)
 thre = as.numeric(coords(rl.ROC, "best", ret = "threshold", best.weights = c(cost = custo, prevalence =  prevalencia)))
 thre
@@ -309,7 +315,7 @@ rl.treino = as.factor(ifelse(pred.rl.treino > thre,'Positivo',"Negativo"))
 confusionMatrix(rl.treino, reference = dados.treino$resultadoTeste, positive = 'Positivo')
 ```
 
-O modelo conseguiu classificar corretamente $83\%$ (sensibilidade) das pessoas que tiveram resultado positivo no exame, e classificou corretamente $34\%$ das pessoas que tiveram resultado negativo. \newline
+O modelo conseguiu classificar corretamente $72\%$ (sensibilidade) das pessoas que tiveram resultado positivo no exame, e classificou corretamente $11\%$ das pessoas que tiveram resultado negativo. \newline
 Veremos também as métricas para os dados de validação, para tentar observar a performance do modelo em dados desconhecidos anteriormente.
 
 ```{r}
@@ -319,7 +325,7 @@ rl.val <- as.factor(ifelse(pred.rl.val > thre,"Positivo","Negativo"))
 confusionMatrix(rl.val, reference = dados.valid$resultadoTeste, positive = 'Positivo')
 ```
 
-A sensibilidade novamente é de $78\%$ enquanto a especificidade é de $44\%$, uma performance parecida com a dos dados de treino.
+A sensibilidade novamente é de $73\%$ enquanto a especificidade é de $10\%$, uma performance parecida com a dos dados de treino.
 Por fim, veremos o desempenho do modelo nos dados de treino, que usam testes menos poderosos e, portanto, podem apresentar erros.
 
 ```{r}
@@ -329,12 +335,7 @@ rl.test = as.factor(ifelse(pred.rl.test > thre,'Positivo',"Negativo"))
 confusionMatrix(rl.test, reference = dados.test$resultadoTeste, positive = 'Positivo')
 ```
 
-Notemos, então, que a sensibilidade nos dados de teste foi de $53\%$ e a especificidade de $67\%$. Tal resultado pode ter dois significados, e não temos informações suficientes para ver qual está certo ou se ambos estão corretos:
-
-* O modelo tem uma variância grande quanto às métricas analisadas em dados não antes vistos
-
-* Os testes utilizados no exame erraram e na verdade o resultado correto é o predito pelo modelo
-
+Notemos, então, que a sensibilidade nos dados de teste foi de $76\%$ e a especificidade de $11\%$. 
 A proporção prevista para a base de testes foi:
 
 ```{r}
@@ -344,9 +345,9 @@ prop.table(table(rl.test))
 Por fim, criaremos um vetor que resume as métricas utilizadas nos três conjuntos de dados.
 
 ```{r}
-Acurácia = c(50.86, 53.51, 64.61)
-Sensibilidade = c(83.12, 77.73, 52.68)
-Especificidade = c(34.47, 43.81, 67.44)
+Acurácia = c(31.92, 31.54, 27.78)
+Sensibilidade = c(72.61, 73.01, 76.68)
+Especificidade = c(10.28, 09.95, 10.82)
 med_rl = cbind(Acurácia, Sensibilidade, Especificidade)
 rownames(med_rl) = c('Treino', 'Validação', 'Teste')
 med_rl %>% 
