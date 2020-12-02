@@ -259,7 +259,7 @@ Primeiro vamos considerar o modelo completo contendo como variáveis explicativa
 * Sexo
 * Sintomas (uma variável indicadora para cada)
 
-```{r}
+```{r, results = 'show'}
 fit.rl = glm(resultadoTeste ~ ., family = binomial,data = dados.treino)
 summary(fit.rl)
 ```
@@ -268,20 +268,20 @@ summary(fit.rl)
 
 Vamos usar stepAIC para tentar escolher um subconjunto das variáveis explicativas.
 
-```{r}
+```{r, echo = T, results = 'show'}
 fit.rl = stepAIC(fit.rl, direction = 'both', trace = 0)
 summary(fit.rl)
 ```
 
 Todas as variáveis foram mantidas pelo algoritmo. Vamos então checar por multicolinearidade.
 
-```{r}
+```{r, echo = T, results = 'show'}
 car::vif(fit.rl)
 ```
 
 Notemos que há evidências de multicolinearidade usando os critérios usuais (VIF maiores que 5), então retiraremos _idade_ do modelo. \newline
 
-```{r}
+```{r, echo = T, results='show'}
 fit.rl = glm(resultadoTeste ~ ., family = binomial,data = subset(dados.treino, select = -idade))
 summary(fit.rl)
 ```
@@ -296,7 +296,7 @@ pred.rl.treino = predict(fit.rl, type = 'response')
 
 Abaixo podemos ver a curva ROC:
 
-```{r}
+```{r, results = 'show'}
 pr.train = ROCR::prediction(pred.rl.treino, dados.treino$resultadoTeste)
 pr.train.perf = ROCR::performance(pr.train, measure = 'tpr', x.measure = 'fpr')
 plot(pr.train.perf)
@@ -305,7 +305,7 @@ abline(a=0.0, b= 1.0, lty = 2)
 
 Vamos checar também a área embaixo da curva (AUC) que criamos anteriormente.
 
-```{r}
+```{r, results='show'}
 ROCR::performance(pr.train, measure = 'auc')@y.values[[1]]
 ```
 
@@ -316,7 +316,7 @@ $$max(sensitivities + r \times specificities)$$
 Onde:
 $$r = \frac{1 - prevalence}{cost * prevalence}$$
 Sendo _cost_ o custo relativo de um Falso Negativo comparado com o de um Falso Positivo e prevalence número de Positivos dividido pelo total.
-```{r}
+```{r, results='show'}
 prop.table(table(dados.treino$resultadoTeste))
 ```
 
@@ -325,7 +325,7 @@ Para comparar e escolher o custo, testaremos duas possibilidades ($custo = 2$ e 
 
 Primeiro, testaremos com $custo = 2$.
 
-```{r}
+```{r, results='show'}
 custo = 2
 prevalencia = 0.3561658
 rl.ROC <- roc(dados.treino$resultadoTeste, pred.rl.treino,plot=FALSE)
@@ -335,7 +335,7 @@ thre
 
 Agora, com o _threshold_ definido, veremos então a matriz de confusão com relação aos dados de treino.
 
-```{r}
+```{r, results='show'}
 rl.treino = as.factor(ifelse(pred.rl.treino > thre,'Positivo',"Negativo"))
 confusionMatrix(rl.treino, reference = dados.treino$resultadoTeste, positive = 'Positivo')
 ```
@@ -344,7 +344,7 @@ O modelo conseguiu classificar corretamente $61\%$ (sensibilidade) das pessoas q
 
 Agora, com custo = 3:
 
-```{r}
+```{r, results='show'}
 custo = 3
 prevalencia = 0.3561658
 rl.ROC <- roc(dados.treino$resultadoTeste, pred.rl.treino,plot=FALSE)
@@ -354,7 +354,7 @@ thre
 
 Notemos que, como esperado, o threshold diminuiu. Veremos então a matriz de confusão com relação aos dados de treino.
 
-```{r}
+```{r, results='show'}
 rl.treino = as.factor(ifelse(pred.rl.treino > thre,'Positivo',"Negativo"))
 confusionMatrix(rl.treino, reference = dados.treino$resultadoTeste, positive = 'Positivo')
 ```
@@ -368,7 +368,7 @@ Escolheremos então $custo = 3$ pois, apesar de diminuir a especificidade, maxim
 
 Vamos checar as métricas agora olhando para os dados de validação (que são como nossos dados de teste).
 
-```{r}
+```{r, results='show'}
 pred.rl.val = predict(fit.rl, newdata = dados.valid, type = 'response')
 rl.val <- as.factor(ifelse(pred.rl.val > thre,"Positivo","Negativo"))
 confusionMatrix(rl.val, reference = dados.valid$resultadoTeste, positive = 'Positivo')
@@ -377,7 +377,7 @@ confusionMatrix(rl.val, reference = dados.valid$resultadoTeste, positive = 'Posi
 A sensibilidade novamente é de $87\%$ enquanto a especificidade é de $27\%$, uma performance parecida com a dos dados de treino.
 Por fim, veremos o desempenho do modelo nos dados de treino, que usam testes menos poderosos e, portanto, podem apresentar erros.
 
-```{r}
+```{r, results='show'}
 pred.rl.test = predict(fit.rl, newdata = dados.test %>% dplyr::select(-resultadoTeste), type = 'response')
 rl.test = as.factor(ifelse(pred.rl.test > thre,'Positivo',"Negativo"))
 confusionMatrix(rl.test, reference = dados.test$resultadoTeste, positive = 'Positivo')
@@ -407,7 +407,7 @@ med_rl %>%
 
 E o tempo de execução do _fit_ é:
 
-```{r}
+```{r, results='show'}
 tic('RL fitting')
 fit.rl2 = glm(resultadoTeste ~ ., family = binomial,data = dados.treino %>% dplyr::select(-idade))
 toc()
@@ -470,6 +470,55 @@ med_rl %>%
   kableExtra::kable_styling() %>%
   kableExtra::kable_classic_2(full_width = F) 
 ```
+
+## Redes Neurais Artificiais
+
+O modelo de redes neurais artificiais foi implementado em python com a biblioteca Keras (Tensorflow), com o acompanhamento do treino feito pelo Comet.ml. Em sua arquitetura, tratando-se de uma Rede Neural totalmente conectada, possui uma hidden layer (com 8 unidades), 137 parâmetros e função de ativação sigmoid:
+
+$$ \sigma(x) = \frac{1}{1 + e^x}$$  
+
+Outras caracteristicas da rede e de configuração de otimização são:
+
+* Função de custo
+    +  Binnary Cross-Entropy
+    + $H_P(q) = - \frac{1}{N} \displaystyle\sum_{i=1}^{N} y_i \cdot log(p(y_i)) + (1 - y_i) \cdot log(1 - p(y_i))$
+    
+* Otimizador
+    + Adam (Padrão)
+    
+* Batch size
+    + 1024 indivíduos
+    
+*	Epochs
+    + 100
+
+* Método de escolha do ponto de corte
+    + Youden's J statistic
+      
+A implementação do método foi feita através do Python. Os arquivos relacionados estão disponíveis no Github (cujo link está no fim desse relatório). Para mais detalhes, veja os seguintes arquivos:
+
+* xxxxx.py
+ 
+* xxxxx.ipynb
+
+* xxxxx.com.comet
+
+Com essas características os resultados obtidos foram:
+
+* Treino
+    + AUC: 0.67
+    + Acurácia: 0.52
+    + Sensibilidade: 0.81
+    + Especificidade: 0.40
+
+* Treino
+    + Acurácia: 0.55
+    + Sensibilidade: 0.83
+    + Especificidade: 0.36
+    
+
+Como esses resultados foram semelhantes aos do modelo de regressão logística, que possui uma melhor interpretabilidade e menor complexidade de implementação (e tempo de ajuste), acabamos por não escolher as redes neurais artificiais como modelo final do projeto.
+
 
 # Comparações entre modelos
 
