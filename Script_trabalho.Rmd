@@ -206,6 +206,7 @@ dados.treino <- dados.treino %>% dplyr::select(-Assintomatico)
 dados.valid  <-dados.valid %>% dplyr::select(-Assintomatico)
 dados.test <- dados.test %>% dplyr::select(-Assintomatico)
 ```
+# Introdução
 
 
 # Objetivos
@@ -467,6 +468,10 @@ med_rl %>%
   kableExtra::kable_styling() %>%
   kableExtra::kable_classic_2(full_width = F) 
 ```
+
+# Comparações entre modelos
+
+# Conclusão
 
 # Links
 
