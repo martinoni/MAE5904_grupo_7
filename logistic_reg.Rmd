@@ -48,6 +48,11 @@ files <- dir() %>%
   filter(str_detect(.,"dados-sp-")) %>% 
   unlist() %>% 
   as.vector()
+
+
+
+
+
 dados <- NULL
 for(i in length(files)){
   temp <- fread(files[i], header= TRUE, stringsAsFactors = T) %>% 
@@ -62,6 +67,7 @@ for(i in length(files)){
     filter(dataNotificacao > lubridate::dmy("01-06-2020"))
   dados <- rbind(dados,temp)
 }
+
 # Criando os sintomeas
 dados <- dados %>% 
   mutate(
@@ -97,6 +103,7 @@ dados <- dados %>%
   filter(tipoTeste != "Outro") %>% 
   filter(idade <= 100) %>% 
   dplyr::select(-c(verificacao,verificacao2))
+
 dados.modelo <- dados %>% filter(tipoTeste == "RT-PCR") 
 dados.modelo <- dados.modelo[order(as.Date(dados.modelo$dataNotificacao, format="%Y-%m-%d")),]
 index_max <- (3*nrow(dados.modelo))%/%4 + 1
@@ -126,9 +133,18 @@ Primeiro vamos considerar o modelo completo contendo como variáveis explicativa
 
 ```{r}
 treino = dados.treino[, c(6, 12, 14, 27, 31:40)]
+sort(colnames(treino))
+sort(colnames(dados.treino))
 treino$resultadoTeste = relevel(treino$resultadoTeste, ref = 'Negativo')
-fit.rl = glm(resultadoTeste ~ ., family = binomial,data = treino)
+str(dados.treino)
+
+fit.rl = glm(resultadoTeste ~ Coriza + Dispneia + DistGustativos +
+DistOlfativos + DorDeCabeca +   DorDeGarganta + Febre +
+idade + Outros + profissionalSaude + 
+sexo + Tosse, family = binomial,data = dados.treino)
 summary(fit.rl)
+
+
 ```
 
 Note que todas as variáveis se mostraram significativas a um nível de $5\%$, então serão mantidas. Aqui vamos também checar por multicolinearidade.
