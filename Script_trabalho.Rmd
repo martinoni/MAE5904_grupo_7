@@ -128,7 +128,7 @@ dados <- dados %>%
   filter(tipoTeste != "Outro") %>% 
   filter(idade <= 100) %>% 
   dplyr::select(-c(verificacao,verificacao2))
-
+dados$resultadoTeste = relevel(dados$resultadoTeste, ref = 'Negativo')
 # Selecionando apenas as informações que serão utilizadas
 dados.modelo <- dados %>% 
   filter(tipoTeste == "RT-PCR") %>% 
