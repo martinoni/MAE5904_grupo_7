@@ -250,7 +250,6 @@ Primeiro vamos considerar o modelo completo contendo como variáveis explicativa
 * Faixa Etária
 * Idade
 * Sexo
-* Assintomático
 * Sintomas (uma variável indicadora para cada)
 
 ```{r}
