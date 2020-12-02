@@ -243,6 +243,11 @@ Para esse estudo, ao invés de considerarmos o "individuo ter ou não ter a doen
 
 ## Regressão Logística
 
+Aqui, assumimos que o resultado do teste dadas as variáveis explicativas, $Y|x_i$, assume uma distribuição $Bernoulli$ com probabilidade $\pi_i$ de ser positivo.
+$$Y|x_i \sim Bernoulli(\pi_i)$$
+Além disso, a função de ligação é:
+$$\log\left(\frac{\pi_i}{1 - \pi_i}\right) = \beta_0 + \beta_1x_1 + \beta_2x_2 + ... +  + \beta_{13}x_{13}$$
+
 Primeiro vamos considerar o modelo completo contendo como variáveis explicativas:
 
 * Profissional da saúde
@@ -255,6 +260,8 @@ Primeiro vamos considerar o modelo completo contendo como variáveis explicativa
 fit.rl = glm(resultadoTeste ~ ., family = binomial,data = dados.treino)
 summary(fit.rl)
 ```
+
+### Seleção do Modelo
 
 Vamos usar stepAIC para tentar escolher um subconjunto das variáveis explicativas.
 
@@ -310,8 +317,13 @@ Sendo _cost_ o custo relativo de um Falso Negativo comparado com o de um Falso P
 prop.table(table(dados.treino$resultadoTeste))
 ```
 
+### Comparação variando Custo 
+Para comparar e escolher o custo, testaremos duas possibilidades ($custo = 2$ e $custo = 3$), e escolheremos o custo cujo threshold maximiza a sensibilidade nos dados de treino.
+
+Primeiro, testaremos com $custo = 2$.
+
 ```{r}
-custo = 3
+custo = 2
 prevalencia = 0.3561658
 rl.ROC <- roc(dados.treino$resultadoTeste, pred.rl.treino,plot=FALSE)
 thre = as.numeric(coords(rl.ROC, "best", ret = "threshold", best.weights = c(cost = custo, prevalence =  prevalencia)))
@@ -325,27 +337,51 @@ rl.treino = as.factor(ifelse(pred.rl.treino > thre,'Positivo',"Negativo"))
 confusionMatrix(rl.treino, reference = dados.treino$resultadoTeste, positive = 'Positivo')
 ```
 
-O modelo conseguiu classificar corretamente $72\%$ (sensibilidade) das pessoas que tiveram resultado positivo no exame, e classificou corretamente $11\%$ das pessoas que tiveram resultado negativo. \newline
-Veremos também as métricas para os dados de validação, para tentar observar a performance do modelo em dados desconhecidos anteriormente.
+O modelo conseguiu classificar corretamente $61\%$ (sensibilidade) das pessoas que tiveram resultado positivo no exame, e classificou corretamente $61\%$ das pessoas que tiveram resultado negativo. 
+
+Agora, com custo = 3:
 
 ```{r}
-#val = dados.valid[, c(6, 14, 27, 31:40)]
+custo = 3
+prevalencia = 0.3561658
+rl.ROC <- roc(dados.treino$resultadoTeste, pred.rl.treino,plot=FALSE)
+thre = as.numeric(coords(rl.ROC, "best", ret = "threshold", best.weights = c(cost = custo, prevalence =  prevalencia)))
+thre
+```
+
+Notemos que, como esperado, o threshold diminuiu. Veremos então a matriz de confusão com relação aos dados de treino.
+
+```{r}
+rl.treino = as.factor(ifelse(pred.rl.treino > thre,'Positivo',"Negativo"))
+confusionMatrix(rl.treino, reference = dados.treino$resultadoTeste, positive = 'Positivo')
+```
+
+O modelo conseguiu classificar corretamente $89\%$ (sensibilidade) das pessoas que tiveram resultado positivo no exame, e classificou corretamente $22\%$ das pessoas que tiveram resultado negativo. 
+
+Escolheremos então $custo = 3$ pois, apesar de diminuir a especificidade, maximizou a capacidade do algoritmo de detectar positivos verdadeiros.
+
+
+### Avaliação do Modelo Final
+
+Vamos checar as métricas agora olhando para os dados de validação (que são como nossos dados de teste).
+
+```{r}
 pred.rl.val = predict(fit.rl, newdata = dados.valid, type = 'response')
 rl.val <- as.factor(ifelse(pred.rl.val > thre,"Positivo","Negativo"))
 confusionMatrix(rl.val, reference = dados.valid$resultadoTeste, positive = 'Positivo')
 ```
 
-A sensibilidade novamente é de $73\%$ enquanto a especificidade é de $10\%$, uma performance parecida com a dos dados de treino.
+A sensibilidade novamente é de $87\%$ enquanto a especificidade é de $27\%$, uma performance parecida com a dos dados de treino.
 Por fim, veremos o desempenho do modelo nos dados de treino, que usam testes menos poderosos e, portanto, podem apresentar erros.
 
 ```{r}
-#teste = dados.test[, c(6, 14, 27, 31:40)]
 pred.rl.test = predict(fit.rl, newdata = dados.test %>% dplyr::select(-resultadoTeste), type = 'response')
 rl.test = as.factor(ifelse(pred.rl.test > thre,'Positivo',"Negativo"))
 confusionMatrix(rl.test, reference = dados.test$resultadoTeste, positive = 'Positivo')
 ```
 
-Notemos, então, que a sensibilidade nos dados de teste foi de $76\%$ e a especificidade de $11\%$. 
+Notemos, então, que a sensibilidade nos dados de teste foi de $88\%$ e a especificidade de $19\%$. Apesar das métricas de teste terem sido parecidas, convem lembrar que não podemos usar as mesmas para avaliação do modelo pois os testes laboratoriais utilizados nas amostras não são tão confiáveis.
+
 A proporção prevista para a base de testes foi:
 
 ```{r, results='show'}
@@ -355,9 +391,9 @@ prop.table(table(rl.test))
 Por fim, criaremos um vetor que resume as métricas utilizadas nos três conjuntos de dados.
 
 ```{r, results='show'}
-Acurácia = c(31.92, 31.54, 27.78)
-Sensibilidade = c(72.61, 73.01, 76.68)
-Especificidade = c(10.28, 09.95, 10.82)
+Acurácia = c(46.15, 45.99, 36.47)
+Sensibilidade = c(89.13, 86.61, 87.89)
+Especificidade = c(22.37, 27.28, 18.65)
 med_rl = cbind(Acurácia, Sensibilidade, Especificidade)
 rownames(med_rl) = c('Treino', 'Validação', 'Teste')
 med_rl %>% 
@@ -370,7 +406,7 @@ E o tempo de execução do _fit_ é:
 
 ```{r}
 tic('RL fitting')
-fit.rl2 = glm(resultadoTeste ~ ., family = binomial,data = dados.treino)
+fit.rl2 = glm(resultadoTeste ~ ., family = binomial,data = dados.treino %>% dplyr::select(-idade))
 toc()
 ```
 
