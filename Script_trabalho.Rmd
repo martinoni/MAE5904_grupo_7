@@ -497,7 +497,7 @@ Outras caracteristicas da rede e de configuração de otimização são:
       
 A implementação do método foi feita através do Python. Os arquivos relacionados estão disponíveis no Github (cujo link está no fim desse relatório). Para mais detalhes, veja os seguintes arquivo e link:
  
-* RNA.ipynb
+* RNA.ipynb (O arquivo Script_trabalho.Rmd deve ser rodado antes para o funcionamento ideal deste notebook)
 
 * https://www.comet.ml/martinoni/mae5904-rna/a0c7e454164d4b11a6cd9a4882bba9f1
 
