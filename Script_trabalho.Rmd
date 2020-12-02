@@ -499,7 +499,7 @@ A implementação do método foi feita através do Python. Os arquivos relaciona
  
 * RNA.ipynb (O arquivo Script_trabalho.Rmd deve ser rodado antes para o funcionamento ideal deste notebook)
 
-* https://www.comet.ml/martinoni/mae5904-rna/a0c7e454164d4b11a6cd9a4882bba9f1
+* https://www.comet.ml/martinoni/mae5904-rna/a0c7e454164d4b11a6cd9a4882bba9f1 (Abas contando informações imporantes: Charts; Metrics; Graphics; Confusion Matrices)
 
 Com essas características os resultados obtidos foram:
 
