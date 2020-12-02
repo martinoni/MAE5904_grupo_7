@@ -60,6 +60,8 @@ require(tictoc)
 
 No código abaixo estamos importando os dados e aplicando os filtros necessárias paras as realizarmos as analises. Os dados utilizados são referentes ao Estado de São Paulo e podem ser baixados em [OpenDataSus](https://opendatasus.saude.gov.br/dataset/casos-nacionais).
 
+Os dados são oriundos do sistema e-SUS NOTIFICA, que foi desenvolvido para registro de casos de Síndrome Gripal suspeitos de Covid-19 e não apresentam informações de estados e municípios que utilizam sistemas próprios de notificação de casos suspeitos de Covid-19.
+
 ```{r}
 # Esse chunk é apenas para criar o banco de dados
 # como demora um pouco, o resultado dessa saida foi salvo em dados.Rdata
@@ -216,6 +218,22 @@ Foram utilizados os seguintes métodos:
 * Random Forest
 * Suporte Vector Machine
 * Redes Neurais Artificiais
+
+## Métricas de qualidade dos modelos
+
+Foram utilizadas as seguintes métricas
+
+* Sensibilidade: Probabilidade do resultado ser positivo quando de fato o individuo tem a doença.
+
+* Especificidade: Probabilidade do resultado ser negativo quando de fato o individuo não tem a doença.
+
+* Acurácia: probabilidade do teste fornecer resultados corretos, ou seja, ser positivo nos doentes e negativo nos não doentes. Expresso de outra forma é a probabilidade dos verdadeiros positivos e verdadeiros negativos como uma proporção de todos osresultados
+
+Para esse estudo, ao invés de considerarmos o "individuo ter ou não ter a doença", teremos "o teste RT-PCR positivo ou negativo", ficando a reinterpretação da sensibilidade e especificidade dessas métricas conforme abaixo:
+
+* Sensibilidade: Probabilidade do modelo resultar em positivo quando o teste RT-PCR foi positivo.
+
+* Especificidade: Probabilidade do modelo resultar em negativo quando o teste RT-PCR foi negativo.
 
 ## Regressão Logística
 
@@ -402,3 +420,11 @@ med_rl %>%
   kableExtra::kable_styling() %>%
   kableExtra::kable_classic_2(full_width = F) 
 ```
+
+# Links
+
+* Repositório no [GitHub](https://github.com/martinoni/MAE5904_grupo_7)
+
+* [OpenDataSus](https://opendatasus.saude.gov.br/dataset/casos-nacionais)
+
+* Apresentação no [google docs](https://docs.google.com/presentation/d/1Ky5LQXiqovJtrZP0m8oJ7JNqgoEsEi8TVnsgymq2h9s/edit#slide=id.p)
