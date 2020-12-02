@@ -138,11 +138,11 @@ dados.modelo <- dados %>%
                 DistOlfativos, DorDeCabeca, DorDeGarganta, 
                 Febre, Tosse, Outros, profissionalSaude)
 
-# Separar os dados de RT-PCR em treinamento (75\%), validacao (25\%) e teste os de teste rapido
-set.seed(123)
-rows <- sample.int(n = nrow(dados.modelo), size = floor(.75*nrow(dados.modelo)), replace = F)
-dados.treino <- dados.modelo[rows, ]
-dados.valid  <- dados.modelo[-rows, ]
+# Separar os dados de RT-PCR temporalmente, e os de teste serao os de teste rápido
+dados.modelo <- dados.modelo[order(as.Date(dados.modelo$dataNotificacao, format="%Y-%m-%d")),]
+index_max <- (3*nrow(dados.modelo))%/%4 + 1
+dados.treino <- dados.modelo[1:index_max]
+dados.valid <- dados.modelo[(index_max+1):nrow(dados.modelo)]
 dados.test <- dados %>% 
   filter(tipoTeste != "RT-PCR") %>% 
   dplyr::select(resultadoTeste, sexo, municipio, faixaetaria, idade,
