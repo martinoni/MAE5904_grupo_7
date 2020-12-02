@@ -495,13 +495,11 @@ Outras caracteristicas da rede e de configuração de otimização são:
 * Método de escolha do ponto de corte
     + Youden's J statistic
       
-A implementação do método foi feita através do Python. Os arquivos relacionados estão disponíveis no Github (cujo link está no fim desse relatório). Para mais detalhes, veja os seguintes arquivos:
-
-* xxxxx.py
+A implementação do método foi feita através do Python. Os arquivos relacionados estão disponíveis no Github (cujo link está no fim desse relatório). Para mais detalhes, veja os seguintes arquivo e link:
  
-* xxxxx.ipynb
+* RNA.ipynb
 
-* xxxxx.com.comet
+* https://www.comet.ml/martinoni/mae5904-rna/a0c7e454164d4b11a6cd9a4882bba9f1
 
 Com essas características os resultados obtidos foram:
 
@@ -515,14 +513,16 @@ Com essas características os resultados obtidos foram:
     + Acurácia: 0.55
     + Sensibilidade: 0.83
     + Especificidade: 0.36
-    
-
-Como esses resultados foram semelhantes aos do modelo de regressão logística, que possui uma melhor interpretabilidade e menor complexidade de implementação (e tempo de ajuste), acabamos por não escolher as redes neurais artificiais como modelo final do projeto.
-
 
 # Comparações entre modelos
 
 # Conclusão
+
+Os resultados foram satisfatórios no sentido de as métricas analisadas serem semelhantes para o banco de treino e de validação, mesmo que estes sejam separados em ordem temporal. Isso é um indício de que o modelo, apesar de somente poder ser ajustado com dados do presente, deve poder ser utilizado para inferências futuras.
+
+As métricas avaliadas mostraram-se relativamente próximas se comparadas entre os quatro modelos implementados, e nos casos possíveis, o ponto de corte mostrou-se importante para controlar a taxa de erros do tipo 1.
+
+A classe de modelos que mostrou-se mais adequada para a resolução do problema foi a de Regressão Logística, sendo que os resultados obtidos na nossa implementação foram muito semelhantes aos da RNA, que mostrou-se ligeiramente superior quanto ao desempenho na base de dados. Além disso, a regressão logística permite uma alta interpretabilidade de seus parâmetros, o que é uma grande vantagem para um estudo mais estruturado das associações dos fatores contabilizados na modelagem com a variável resposta (contaminação de Covid-19). Essa classe de modelos costuma possuir um menor tempo de ajuste se comparados a modelos mais complexos, e também permite o controle de taxa de erro do tipo 1 por vários métodos disponíveis, inclusive considerando pesos para cada tipo de erro para a obtenção do ponto de corte ideal, que é um dos parâmetros de inferência mais importantes em problemas que envolvem saúde pública. 
 
 # Links
 
@@ -531,3 +531,5 @@ Como esses resultados foram semelhantes aos do modelo de regressão logística, 
 * [OpenDataSus](https://opendatasus.saude.gov.br/dataset/casos-nacionais)
 
 * Apresentação no [google docs](https://docs.google.com/presentation/d/1Ky5LQXiqovJtrZP0m8oJ7JNqgoEsEi8TVnsgymq2h9s/edit#slide=id.p)
+
+* Informações de treino da RNA em [Comet.ml](https://www.comet.ml/martinoni/mae5904-rna/a0c7e454164d4b11a6cd9a4882bba9f1)
