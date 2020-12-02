@@ -92,7 +92,6 @@ Os dados são oriundos do sistema e-SUS NOTIFICA, que foi desenvolvido para regi
 
 ```{r}
 load("dados.Rdata")
-
 # Criando os sintomeas
 dados <- dados %>% 
   mutate(
@@ -134,24 +133,24 @@ dados <- dados %>%
 dados.modelo <- dados %>% 
   filter(tipoTeste == "RT-PCR") %>% 
   dplyr::select(resultadoTeste, sexo, faixaetaria, idade,
-                Assintomatico, Coriza, Dispneia , DistGustativos, 
+                Assintomatico,Coriza, Dispneia , DistGustativos, 
                 DistOlfativos, DorDeCabeca, DorDeGarganta, 
-                Febre, Tosse, Outros, profissionalSaude)
+                Febre, Tosse, Outros, profissionalSaude, dataNotificacao)
 
 # Separar os dados de RT-PCR temporalmente, e os de teste serao os de teste rápido
-dados.modelo <- dados.modelo[order(as.Date(dados.modelo$dataNotificacao, format="%Y-%m-%d")),]
+dados.modelo <- dados.modelo[order(as.Date(dados.modelo$dataNotificacao, format="%Y-%m-%d")),] %>% dplyr::select(-dataNotificacao) 
 index_max <- (3*nrow(dados.modelo))%/%4 + 1
 dados.treino <- dados.modelo[1:index_max]
 dados.valid <- dados.modelo[(index_max+1):nrow(dados.modelo)]
 dados.test <- dados %>% 
   filter(tipoTeste != "RT-PCR") %>% 
-  dplyr::select(resultadoTeste, sexo, municipio, faixaetaria, idade,
+  dplyr::select(resultadoTeste, sexo, faixaetaria, idade,
                 Assintomatico, Coriza, Dispneia , DistGustativos, 
                 DistOlfativos, DorDeCabeca, DorDeGarganta, 
                 Febre, Tosse, Outros, profissionalSaude)
 
 # Apgando objetos desnecessarios
-rm(dados, dados.modelo, files, rows, temp)
+rm(dados, dados.modelo, index_max)
 ```
 
 
@@ -254,21 +253,35 @@ Primeiro vamos considerar o modelo completo contendo como variáveis explicativa
 
 ```{r}
 #treino = dados.treino[, c(6, 12, 14, 27, 31:40)]
-#treino$resultadoTeste = relevel(treino$resultadoTeste, ref = 'Negativo')
+dados.treino$resultadoTeste = relevel(treino$resultadoTeste, ref = 'Negativo')
 fit.rl = glm(resultadoTeste ~ ., family = binomial,data = dados.treino)
 summary(fit.rl)
 ```
 
-Note que tirando profissionalSaude, todas as variáveis se mostraram significativas a um nível de $5\%$, então serão mantidas (manteremos profissional de saúde pois sua retirada não muda as métricas, e pode ser uma informação útil). Aqui vamos também checar por multicolinearidade.
+Vamos usar stepAIC para tentar escolher um subconjunto das variáveis explicativas.
+
+```{r}
+fit.rl = stepAIC(fit.rl, direction = 'both', trace = 0)
+summary(fit.rl)
+```
+
+Todas as variáveis foram mantidas pelo algoritmo. Vamos então checar por multicolinearidade.
 
 ```{r}
 vif(fit.rl)
 ```
 
-Notemos que há evidências de multicolinearidade usando os critérios usuais (VIF maiores que 5), então retiraremos _idade_ do modelo. \newline
+Notemos que há evidências de multicolinearidade usando os critérios usuais (VIF maiores que 5), então retiraremos _faixaetaria_ do modelo. \newline
 
 ```{r}
-fit.rl = glm(resultadoTeste ~ ., family = binomial,data = subset(dados.treino, select = -idade))
+fit.rl = glm(resultadoTeste ~ ., family = binomial,data = subset(dados.treino, select = -faixaetaria))
+summary(fit.rl)
+```
+
+Notemos ainda que agora _profissionalSaude_ deixou de ser significativa a $5\%$, então também retiraremos do modelo final.
+
+```{r}
+fit.rl = glm(resultadoTeste ~ ., family = binomial,data = subset(dados.treino, select = -c(faixaetaria, profissionalSaude)))
 summary(fit.rl)
 ```
 
@@ -277,7 +290,7 @@ Com o modelo definido, partiremos então para a definição do ponto de corte. P
 Para definir o ponto de corte utilizaremos os dados de treino mesmo.
 
 ```{r}
-pred.rl.treino = predict(fit.rl, newdata = dados.treino %>% dplyr::select(-c('resultadoTeste', 'idade')), type = 'response')
+pred.rl.treino = predict(fit.rl, newdata = dados.treino %>% dplyr::select(-c('resultadoTeste')), type = 'response')
 ```
 
 Abaixo podemos ver a curva ROC:
