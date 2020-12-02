@@ -92,6 +92,8 @@ Os dados são oriundos do sistema e-SUS NOTIFICA, que foi desenvolvido para regi
 
 ```{r}
 load("dados.Rdata")
+write.csv(dados, file="dados.csv")
+
 # Criando os sintomeas
 dados <- dados %>% 
   mutate(
