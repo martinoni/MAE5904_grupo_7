@@ -252,8 +252,6 @@ Primeiro vamos considerar o modelo completo contendo como variáveis explicativa
 * Sintomas (uma variável indicadora para cada)
 
 ```{r}
-#treino = dados.treino[, c(6, 12, 14, 27, 31:40)]
-dados.treino$resultadoTeste = relevel(treino$resultadoTeste, ref = 'Negativo')
 fit.rl = glm(resultadoTeste ~ ., family = binomial,data = dados.treino)
 summary(fit.rl)
 ```
@@ -268,20 +266,13 @@ summary(fit.rl)
 Todas as variáveis foram mantidas pelo algoritmo. Vamos então checar por multicolinearidade.
 
 ```{r}
-vif(fit.rl)
+car::vif(fit.rl)
 ```
 
-Notemos que há evidências de multicolinearidade usando os critérios usuais (VIF maiores que 5), então retiraremos _faixaetaria_ do modelo. \newline
+Notemos que há evidências de multicolinearidade usando os critérios usuais (VIF maiores que 5), então retiraremos _idade_ do modelo. \newline
 
 ```{r}
 fit.rl = glm(resultadoTeste ~ ., family = binomial,data = subset(dados.treino, select = -faixaetaria))
-summary(fit.rl)
-```
-
-Notemos ainda que agora _profissionalSaude_ deixou de ser significativa a $5\%$, então também retiraremos do modelo final.
-
-```{r}
-fit.rl = glm(resultadoTeste ~ ., family = binomial,data = subset(dados.treino, select = -c(faixaetaria, profissionalSaude)))
 summary(fit.rl)
 ```
 
@@ -290,14 +281,14 @@ Com o modelo definido, partiremos então para a definição do ponto de corte. P
 Para definir o ponto de corte utilizaremos os dados de treino mesmo.
 
 ```{r}
-pred.rl.treino = predict(fit.rl, newdata = dados.treino %>% dplyr::select(-c('resultadoTeste')), type = 'response')
+pred.rl.treino = predict(fit.rl, type = 'response')
 ```
 
 Abaixo podemos ver a curva ROC:
 
 ```{r}
 pr.train = ROCR::prediction(pred.rl.treino, dados.treino$resultadoTeste)
-pr.train.perf = ROCR::performance(pr.train, measure = 'fpr', x.measure = 'tpr')
+pr.train.perf = ROCR::performance(pr.train, measure = 'tpr', x.measure = 'fpr')
 plot(pr.train.perf)
 abline(a=0.0, b= 1.0, lty = 2)
 ```
@@ -305,7 +296,7 @@ abline(a=0.0, b= 1.0, lty = 2)
 Vamos checar também a área embaixo da curva (AUC) que criamos anteriormente.
 
 ```{r}
-ROCR::performance(pr.train, measure = 'auc')@y.values
+ROCR::performance(pr.train, measure = 'auc')@y.values[[1]]
 ```
 
 Agora vamos escolher o threshold. \newline
