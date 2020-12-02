@@ -460,9 +460,9 @@ h2o.shutdown(prompt=FALSE)
 A tabela abaixo apresenta as métricas obtidas com o modelo Random Forest.
 
 ```{r, results='show'}
-Acurácia = c(49.98, 49.71, 42.45)
-Sensibilidade = c(81.39, 81.44, 79.31)
-Especificidade = c(33.27, 33.19, 29.67)
+Acurácia = c(56.19, 56.98, 50.75)
+Sensibilidade = c(70.01, 70.33, 67.34)
+Especificidade = c(48.55, 50.83, 44.99)
 med_rl = cbind(Acurácia, Sensibilidade, Especificidade)
 rownames(med_rl) = c('Treino', 'Validação', 'Teste')
 med_rl %>% 
