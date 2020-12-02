@@ -167,7 +167,7 @@ tabela1.treino <- print(tableOne.treino, showAllLevels = T, test = F, catDigits 
 
 A tabela abaixo apresenta as características e sintomas dos individuos que integram o conjunto de dados de treinamento.
 
-```{r}
+```{r, results='show'}
 tabela1.treino %>% 
   knitr::kable(caption = "Estatística descritiva para cada características e sintomas dos indivíduos que compõem o conjunto de treinamento.", format = "html") %>%
   kableExtra::kable_styling() %>%
@@ -183,7 +183,7 @@ tabela1.valid <- print(tableOne.valid, showAllLevels = T, test = F, catDigits = 
 
 A tabela abaixo apresenta as características e sintomas dos individuos que integram o conjunto de dados de validação. É possivel notar a semelhança com os valores obtidos na tabela anterior para o conjunto de treinamento, ressaltando que a aleatorização foi devidamente realizada.
 
-```{r}
+```{r, results='show'}
 tabela1.valid %>% 
   knitr::kable(caption = "Estatística descritiva para cada características e sintomas dos indivíduos que compõem o conjunto de validação.", format = "html") %>%
   kableExtra::kable_styling() %>%
@@ -192,7 +192,7 @@ tabela1.valid %>%
 
 A tabela abaixo apresenta os "resultados" obtidos através do uso do teste rápido. É importante ressaltar que mesmo tendo os "resultados" para o banco de teste, este trabalho desconsidera essa informação, visto que este tipo de teste é menos confiavel que o teste RT-PCR. De toda forma, essa informação é relevante para comparar com o cenário onde todos os individuos do banco teste teriam realizado o RT-PCR ao invés do teste rápido, permitindo desta forma, obter uma estimativa do quanto o teste rápido, possívelmente, submestiou os casos positivos de covid-19.
 
-```{r}
+```{r, results='show'}
 prop.table(table(dados.test$resultadoTeste)) %>% 
   knitr::kable(caption = "Proporção dos resultados obtidos utilizando o teste rápido para Covid-19 (banco teste).", format = "html") %>%
   kableExtra::kable_styling() %>%
@@ -207,6 +207,13 @@ dados.treino <- dados.treino %>% dplyr::select(-Assintomatico)
 dados.valid  <-dados.valid %>% dplyr::select(-Assintomatico)
 dados.test <- dados.test %>% dplyr::select(-Assintomatico)
 ```
+
+
+# Objetivos
+
+* Identificar a capacidade de prevermos o resultado positivo de uma testagem para Covid-19
+
+* Implementar e comparar diferentes modelos de classificação vistos na disciplina
 
 
 # Metodologias
@@ -239,7 +246,7 @@ Para esse estudo, ao invés de considerarmos o "individuo ter ou não ter a doen
 
 Primeiro vamos considerar o modelo completo contendo como variáveis explicativas:
 
-* _profissionalSaúde_
+* Profissional da saúde
 * Faixa Etária
 * Idade
 * Sexo
@@ -338,13 +345,13 @@ confusionMatrix(rl.test, reference = dados.test$resultadoTeste, positive = 'Posi
 Notemos, então, que a sensibilidade nos dados de teste foi de $76\%$ e a especificidade de $11\%$. 
 A proporção prevista para a base de testes foi:
 
-```{r}
+```{r, results='show'}
 prop.table(table(rl.test))
 ```
 
 Por fim, criaremos um vetor que resume as métricas utilizadas nos três conjuntos de dados.
 
-```{r}
+```{r, results='show'}
 Acurácia = c(31.92, 31.54, 27.78)
 Sensibilidade = c(72.61, 73.01, 76.68)
 Especificidade = c(10.28, 09.95, 10.82)
@@ -410,7 +417,7 @@ h2o.shutdown(prompt=FALSE)
 
 A tabela abaixo apresenta as métricas obtidas com o modelo Random Forest.
 
-```{r}
+```{r, results='show'}
 Acurácia = c(49.98, 49.71, 42.45)
 Sensibilidade = c(81.39, 81.44, 79.31)
 Especificidade = c(33.27, 33.19, 29.67)

@@ -71,6 +71,230 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
+<script>$(document).ready(function(){
+    if (typeof $('[data-toggle="tooltip"]').tooltip === 'function') {
+        $('[data-toggle="tooltip"]').tooltip();
+    }
+    if ($('[data-toggle="popover"]').popover === 'function') {
+        $('[data-toggle="popover"]').popover();
+    }
+});
+</script>
+<style type="text/css">
+.lightable-minimal {
+border-collapse: separate;
+border-spacing: 16px 1px;
+width: 100%;
+margin-bottom: 10px;
+}
+.lightable-minimal td {
+margin-left: 5px;
+margin-right: 5px;
+}
+.lightable-minimal th {
+margin-left: 5px;
+margin-right: 5px;
+}
+.lightable-minimal thead tr:last-child th {
+border-bottom: 2px solid #00000050;
+empty-cells: hide;
+}
+.lightable-minimal tbody tr:first-child td {
+padding-top: 0.5em;
+}
+.lightable-minimal.lightable-hover tbody tr:hover {
+background-color: #f5f5f5;
+}
+.lightable-minimal.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-classic {
+border-top: 0.16em solid #111111;
+border-bottom: 0.16em solid #111111;
+width: 100%;
+margin-bottom: 10px;
+margin: 10px 5px;
+}
+.lightable-classic tfoot tr td {
+border: 0;
+}
+.lightable-classic tfoot tr:first-child td {
+border-top: 0.14em solid #111111;
+}
+.lightable-classic caption {
+color: #222222;
+}
+.lightable-classic td {
+padding-left: 5px;
+padding-right: 5px;
+color: #222222;
+}
+.lightable-classic th {
+padding-left: 5px;
+padding-right: 5px;
+font-weight: normal;
+color: #222222;
+}
+.lightable-classic thead tr:last-child th {
+border-bottom: 0.10em solid #111111;
+}
+.lightable-classic.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-classic.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-classic-2 {
+border-top: 3px double #111111;
+border-bottom: 3px double #111111;
+width: 100%;
+margin-bottom: 10px;
+}
+.lightable-classic-2 tfoot tr td {
+border: 0;
+}
+.lightable-classic-2 tfoot tr:first-child td {
+border-top: 3px double #111111;
+}
+.lightable-classic-2 caption {
+color: #222222;
+}
+.lightable-classic-2 td {
+padding-left: 5px;
+padding-right: 5px;
+color: #222222;
+}
+.lightable-classic-2 th {
+padding-left: 5px;
+padding-right: 5px;
+font-weight: normal;
+color: #222222;
+}
+.lightable-classic-2 tbody tr:last-child td {
+border-bottom: 3px double #111111;
+}
+.lightable-classic-2 thead tr:last-child th {
+border-bottom: 1px solid #111111;
+}
+.lightable-classic-2.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-classic-2.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-material {
+min-width: 100%;
+white-space: nowrap;
+table-layout: fixed;
+font-family: Roboto, sans-serif;
+border: 1px solid #EEE;
+border-collapse: collapse;
+margin-bottom: 10px;
+}
+.lightable-material tfoot tr td {
+border: 0;
+}
+.lightable-material tfoot tr:first-child td {
+border-top: 1px solid #EEE;
+}
+.lightable-material th {
+height: 56px;
+padding-left: 16px;
+padding-right: 16px;
+}
+.lightable-material td {
+height: 52px;
+padding-left: 16px;
+padding-right: 16px;
+border-top: 1px solid #eeeeee;
+}
+.lightable-material.lightable-hover tbody tr:hover {
+background-color: #f5f5f5;
+}
+.lightable-material.lightable-striped tbody tr:nth-child(even) {
+background-color: #f5f5f5;
+}
+.lightable-material.lightable-striped tbody td {
+border: 0;
+}
+.lightable-material.lightable-striped thead tr:last-child th {
+border-bottom: 1px solid #ddd;
+}
+.lightable-material-dark {
+min-width: 100%;
+white-space: nowrap;
+table-layout: fixed;
+font-family: Roboto, sans-serif;
+border: 1px solid #FFFFFF12;
+border-collapse: collapse;
+margin-bottom: 10px;
+background-color: #363640;
+}
+.lightable-material-dark tfoot tr td {
+border: 0;
+}
+.lightable-material-dark tfoot tr:first-child td {
+border-top: 1px solid #FFFFFF12;
+}
+.lightable-material-dark th {
+height: 56px;
+padding-left: 16px;
+padding-right: 16px;
+color: #FFFFFF60;
+}
+.lightable-material-dark td {
+height: 52px;
+padding-left: 16px;
+padding-right: 16px;
+color: #FFFFFF;
+border-top: 1px solid #FFFFFF12;
+}
+.lightable-material-dark.lightable-hover tbody tr:hover {
+background-color: #FFFFFF12;
+}
+.lightable-material-dark.lightable-striped tbody tr:nth-child(even) {
+background-color: #FFFFFF12;
+}
+.lightable-material-dark.lightable-striped tbody td {
+border: 0;
+}
+.lightable-material-dark.lightable-striped thead tr:last-child th {
+border-bottom: 1px solid #FFFFFF12;
+}
+.lightable-paper {
+width: 100%;
+margin-bottom: 10px;
+color: #444;
+}
+.lightable-paper tfoot tr td {
+border: 0;
+}
+.lightable-paper tfoot tr:first-child td {
+border-top: 1px solid #00000020;
+}
+.lightable-paper thead tr:last-child th {
+color: #666;
+vertical-align: bottom;
+border-bottom: 1px solid #00000020;
+line-height: 1.15em;
+padding: 10px 5px;
+}
+.lightable-paper td {
+vertical-align: middle;
+border-bottom: 1px solid #00000010;
+line-height: 1.15em;
+padding: 7px 5px;
+}
+.lightable-paper.lightable-hover tbody tr:hover {
+background-color: #F9EEC1;
+}
+.lightable-paper.lightable-striped tbody tr:nth-child(even) {
+background-color: #00000008;
+}
+.lightable-paper.lightable-striped tbody td {
+border: 0;
+}
+</style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -206,6 +430,7 @@ a.sourceLine {
 <div id="importando-o-banco-de-dados" class="section level2">
 <h2>Importando o banco de dados</h2>
 <p>No código abaixo estamos importando os dados e aplicando os filtros necessárias paras as realizarmos as analises. Os dados utilizados são referentes ao Estado de São Paulo e podem ser baixados em <a href="https://opendatasus.saude.gov.br/dataset/casos-nacionais">OpenDataSus</a>.</p>
+<p>Os dados são oriundos do sistema e-SUS NOTIFICA, que foi desenvolvido para registro de casos de Síndrome Gripal suspeitos de Covid-19 e não apresentam informações de estados e municípios que utilizam sistemas próprios de notificação de casos suspeitos de Covid-19.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># Esse chunk é apenas para criar o banco de dados</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="co"># como demora um pouco, o resultado dessa saida foi salvo em dados.Rdata</span></span>
 <span id="cb1-3"><a href="#cb1-3"></a></span>
@@ -303,6 +528,410 @@ a.sourceLine {
 <span id="cb4-2"><a href="#cb4-2"></a><span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;Estatística descritiva para cada características e sintomas dos indivíduos que compõem o conjunto de treinamento.&quot;</span>, <span class="dt">format =</span> <span class="st">&quot;html&quot;</span>) <span class="op">%&gt;%</span></span>
 <span id="cb4-3"><a href="#cb4-3"></a><span class="st">  </span>kableExtra<span class="op">::</span><span class="kw">kable_styling</span>() <span class="op">%&gt;%</span></span>
 <span id="cb4-4"><a href="#cb4-4"></a><span class="st">  </span>kableExtra<span class="op">::</span><span class="kw">kable_classic_2</span>(<span class="dt">full_width =</span> F) </span></code></pre></div>
+<table class="table lightable-classic-2" style="margin-left: auto; margin-right: auto; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Estatística descritiva para cada características e sintomas dos indivíduos que compõem o conjunto de treinamento.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+level
+</th>
+<th style="text-align:left;">
+Overall
+</th>
+<th style="text-align:left;">
+Positivo
+</th>
+<th style="text-align:left;">
+Negativo
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+n
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+212664
+</td>
+<td style="text-align:left;">
+73838
+</td>
+<td style="text-align:left;">
+138826
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sexo (%)
+</td>
+<td style="text-align:left;">
+Feminino
+</td>
+<td style="text-align:left;">
+121000 ( 56.90)
+</td>
+<td style="text-align:left;">
+39975 ( 54.14)
+</td>
+<td style="text-align:left;">
+81025 ( 58.36)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Masculino
+</td>
+<td style="text-align:left;">
+91664 ( 43.10)
+</td>
+<td style="text-align:left;">
+33863 ( 45.86)
+</td>
+<td style="text-align:left;">
+57801 ( 41.64)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Assintomatico (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+212664 (100.00)
+</td>
+<td style="text-align:left;">
+73838 (100.00)
+</td>
+<td style="text-align:left;">
+138826 (100.00)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+0 ( 0.00)
+</td>
+<td style="text-align:left;">
+0 ( 0.00)
+</td>
+<td style="text-align:left;">
+0 ( 0.00)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dispneia (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+172905 ( 81.30)
+</td>
+<td style="text-align:left;">
+61599 ( 83.42)
+</td>
+<td style="text-align:left;">
+111306 ( 80.18)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+39759 ( 18.70)
+</td>
+<td style="text-align:left;">
+12239 ( 16.58)
+</td>
+<td style="text-align:left;">
+27520 ( 19.82)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DistGustativos (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+190434 ( 89.55)
+</td>
+<td style="text-align:left;">
+61110 ( 82.76)
+</td>
+<td style="text-align:left;">
+129324 ( 93.16)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+22230 ( 10.45)
+</td>
+<td style="text-align:left;">
+12728 ( 17.24)
+</td>
+<td style="text-align:left;">
+9502 ( 6.84)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DistOlfativos (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+193455 ( 90.97)
+</td>
+<td style="text-align:left;">
+61868 ( 83.79)
+</td>
+<td style="text-align:left;">
+131587 ( 94.79)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+19209 ( 9.03)
+</td>
+<td style="text-align:left;">
+11970 ( 16.21)
+</td>
+<td style="text-align:left;">
+7239 ( 5.21)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DorDeCabeca (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+142367 ( 66.94)
+</td>
+<td style="text-align:left;">
+50543 ( 68.45)
+</td>
+<td style="text-align:left;">
+91824 ( 66.14)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+70297 ( 33.06)
+</td>
+<td style="text-align:left;">
+23295 ( 31.55)
+</td>
+<td style="text-align:left;">
+47002 ( 33.86)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DorDeGarganta (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+129468 ( 60.88)
+</td>
+<td style="text-align:left;">
+48575 ( 65.79)
+</td>
+<td style="text-align:left;">
+80893 ( 58.27)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+83196 ( 39.12)
+</td>
+<td style="text-align:left;">
+25263 ( 34.21)
+</td>
+<td style="text-align:left;">
+57933 ( 41.73)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Febre (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+136965 ( 64.40)
+</td>
+<td style="text-align:left;">
+42926 ( 58.14)
+</td>
+<td style="text-align:left;">
+94039 ( 67.74)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+75699 ( 35.60)
+</td>
+<td style="text-align:left;">
+30912 ( 41.86)
+</td>
+<td style="text-align:left;">
+44787 ( 32.26)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tosse (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+95866 ( 45.08)
+</td>
+<td style="text-align:left;">
+31477 ( 42.63)
+</td>
+<td style="text-align:left;">
+64389 ( 46.38)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+116798 ( 54.92)
+</td>
+<td style="text-align:left;">
+42361 ( 57.37)
+</td>
+<td style="text-align:left;">
+74437 ( 53.62)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Outros (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+103122 ( 48.49)
+</td>
+<td style="text-align:left;">
+35083 ( 47.51)
+</td>
+<td style="text-align:left;">
+68039 ( 49.01)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+109542 ( 51.51)
+</td>
+<td style="text-align:left;">
+38755 ( 52.49)
+</td>
+<td style="text-align:left;">
+70787 ( 50.99)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+profissionalSaude (%)
+</td>
+<td style="text-align:left;">
+Não
+</td>
+<td style="text-align:left;">
+199568 ( 93.84)
+</td>
+<td style="text-align:left;">
+69519 ( 94.15)
+</td>
+<td style="text-align:left;">
+130049 ( 93.68)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Sim
+</td>
+<td style="text-align:left;">
+13096 ( 6.16)
+</td>
+<td style="text-align:left;">
+4319 ( 5.85)
+</td>
+<td style="text-align:left;">
+8777 ( 6.32)
+</td>
+</tr>
+</tbody>
+</table>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">## Criando a tabela 1 - Validacao</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a>tableOne.valid &lt;-<span class="st"> </span><span class="kw">CreateTableOne</span>(<span class="dt">vars =</span> variaveis, <span class="dt">strata =</span> <span class="st">&quot;resultadoTeste&quot;</span>, <span class="dt">data =</span> dados.valid, <span class="dt">factorVars =</span> fatores, <span class="dt">addOverall =</span> T)</span>
 <span id="cb5-3"><a href="#cb5-3"></a>tabela1.valid &lt;-<span class="st"> </span><span class="kw">print</span>(tableOne.valid, <span class="dt">showAllLevels =</span> T, <span class="dt">test =</span> F, <span class="dt">catDigits =</span> <span class="dv">2</span>,<span class="dt">printToggle =</span> F)</span></code></pre></div>
@@ -311,17 +940,461 @@ a.sourceLine {
 <span id="cb6-2"><a href="#cb6-2"></a><span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;Estatística descritiva para cada características e sintomas dos indivíduos que compõem o conjunto de validação.&quot;</span>, <span class="dt">format =</span> <span class="st">&quot;html&quot;</span>) <span class="op">%&gt;%</span></span>
 <span id="cb6-3"><a href="#cb6-3"></a><span class="st">  </span>kableExtra<span class="op">::</span><span class="kw">kable_styling</span>() <span class="op">%&gt;%</span></span>
 <span id="cb6-4"><a href="#cb6-4"></a><span class="st">  </span>kableExtra<span class="op">::</span><span class="kw">kable_classic_2</span>(<span class="dt">full_width =</span> F) </span></code></pre></div>
+<table class="table lightable-classic-2" style="margin-left: auto; margin-right: auto; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Estatística descritiva para cada características e sintomas dos indivíduos que compõem o conjunto de validação.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+level
+</th>
+<th style="text-align:left;">
+Overall
+</th>
+<th style="text-align:left;">
+Positivo
+</th>
+<th style="text-align:left;">
+Negativo
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+n
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+70888
+</td>
+<td style="text-align:left;">
+24265
+</td>
+<td style="text-align:left;">
+46623
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sexo (%)
+</td>
+<td style="text-align:left;">
+Feminino
+</td>
+<td style="text-align:left;">
+40373 ( 56.95)
+</td>
+<td style="text-align:left;">
+13204 ( 54.42)
+</td>
+<td style="text-align:left;">
+27169 ( 58.27)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Masculino
+</td>
+<td style="text-align:left;">
+30515 ( 43.05)
+</td>
+<td style="text-align:left;">
+11061 ( 45.58)
+</td>
+<td style="text-align:left;">
+19454 ( 41.73)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Assintomatico (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+70888 (100.00)
+</td>
+<td style="text-align:left;">
+24265 (100.00)
+</td>
+<td style="text-align:left;">
+46623 (100.00)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+0 ( 0.00)
+</td>
+<td style="text-align:left;">
+0 ( 0.00)
+</td>
+<td style="text-align:left;">
+0 ( 0.00)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dispneia (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+57761 ( 81.48)
+</td>
+<td style="text-align:left;">
+20402 ( 84.08)
+</td>
+<td style="text-align:left;">
+37359 ( 80.13)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+13127 ( 18.52)
+</td>
+<td style="text-align:left;">
+3863 ( 15.92)
+</td>
+<td style="text-align:left;">
+9264 ( 19.87)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DistGustativos (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+63653 ( 89.79)
+</td>
+<td style="text-align:left;">
+20146 ( 83.02)
+</td>
+<td style="text-align:left;">
+43507 ( 93.32)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+7235 ( 10.21)
+</td>
+<td style="text-align:left;">
+4119 ( 16.98)
+</td>
+<td style="text-align:left;">
+3116 ( 6.68)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DistOlfativos (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+64697 ( 91.27)
+</td>
+<td style="text-align:left;">
+20460 ( 84.32)
+</td>
+<td style="text-align:left;">
+44237 ( 94.88)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+6191 ( 8.73)
+</td>
+<td style="text-align:left;">
+3805 ( 15.68)
+</td>
+<td style="text-align:left;">
+2386 ( 5.12)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DorDeCabeca (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+47573 ( 67.11)
+</td>
+<td style="text-align:left;">
+16606 ( 68.44)
+</td>
+<td style="text-align:left;">
+30967 ( 66.42)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+23315 ( 32.89)
+</td>
+<td style="text-align:left;">
+7659 ( 31.56)
+</td>
+<td style="text-align:left;">
+15656 ( 33.58)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DorDeGarganta (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+43050 ( 60.73)
+</td>
+<td style="text-align:left;">
+15892 ( 65.49)
+</td>
+<td style="text-align:left;">
+27158 ( 58.25)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+27838 ( 39.27)
+</td>
+<td style="text-align:left;">
+8373 ( 34.51)
+</td>
+<td style="text-align:left;">
+19465 ( 41.75)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Febre (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+45743 ( 64.53)
+</td>
+<td style="text-align:left;">
+14033 ( 57.83)
+</td>
+<td style="text-align:left;">
+31710 ( 68.01)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+25145 ( 35.47)
+</td>
+<td style="text-align:left;">
+10232 ( 42.17)
+</td>
+<td style="text-align:left;">
+14913 ( 31.99)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tosse (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+31910 ( 45.01)
+</td>
+<td style="text-align:left;">
+10270 ( 42.32)
+</td>
+<td style="text-align:left;">
+21640 ( 46.41)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+38978 ( 54.99)
+</td>
+<td style="text-align:left;">
+13995 ( 57.68)
+</td>
+<td style="text-align:left;">
+24983 ( 53.59)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Outros (%)
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+34302 ( 48.39)
+</td>
+<td style="text-align:left;">
+11463 ( 47.24)
+</td>
+<td style="text-align:left;">
+22839 ( 48.99)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+36586 ( 51.61)
+</td>
+<td style="text-align:left;">
+12802 ( 52.76)
+</td>
+<td style="text-align:left;">
+23784 ( 51.01)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+profissionalSaude (%)
+</td>
+<td style="text-align:left;">
+Não
+</td>
+<td style="text-align:left;">
+66497 ( 93.81)
+</td>
+<td style="text-align:left;">
+22865 ( 94.23)
+</td>
+<td style="text-align:left;">
+43632 ( 93.58)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Sim
+</td>
+<td style="text-align:left;">
+4391 ( 6.19)
+</td>
+<td style="text-align:left;">
+1400 ( 5.77)
+</td>
+<td style="text-align:left;">
+2991 ( 6.42)
+</td>
+</tr>
+</tbody>
+</table>
 <p>A tabela abaixo apresenta os “resultados” obtidos através do uso do teste rápido. É importante ressaltar que mesmo tendo os “resultados” para o banco de teste, este trabalho desconsidera essa informação, visto que este tipo de teste é menos confiavel que o teste RT-PCR. De toda forma, essa informação é relevante para comparar com o cenário onde todos os individuos do banco teste teriam realizado o RT-PCR ao invés do teste rápido, permitindo desta forma, obter uma estimativa do quanto o teste rápido, possívelmente, submestiou os casos positivos de covid-19.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(dados.test<span class="op">$</span>resultadoTeste)) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;Proporção dos resultados obtidos utilizando o teste rápido para Covid-19 (banco teste).&quot;</span>, <span class="dt">format =</span> <span class="st">&quot;html&quot;</span>) <span class="op">%&gt;%</span></span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="st">  </span>kableExtra<span class="op">::</span><span class="kw">kable_styling</span>() <span class="op">%&gt;%</span></span>
 <span id="cb7-4"><a href="#cb7-4"></a><span class="st">  </span>kableExtra<span class="op">::</span><span class="kw">kable_classic_2</span>(<span class="dt">full_width =</span> F) </span></code></pre></div>
+<table class="table lightable-classic-2" style="margin-left: auto; margin-right: auto; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Proporção dos resultados obtidos utilizando o teste rápido para Covid-19 (banco teste).
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Var1
+</th>
+<th style="text-align:right;">
+Freq
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Positivo
+</td>
+<td style="text-align:right;">
+0.2574259
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Negativo
+</td>
+<td style="text-align:right;">
+0.7425741
+</td>
+</tr>
+</tbody>
+</table>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># Removendo os assintomaticos do conjunto treinamento, validação e teste</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a><span class="co"># pois essa variavel é colinear quando considerados todos os demais sintomas</span></span>
 <span id="cb8-3"><a href="#cb8-3"></a>dados.treino &lt;-<span class="st"> </span>dados.treino <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>Assintomatico)</span>
 <span id="cb8-4"><a href="#cb8-4"></a>dados.valid  &lt;-dados.valid <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>Assintomatico)</span>
 <span id="cb8-5"><a href="#cb8-5"></a>dados.test &lt;-<span class="st"> </span>dados.test <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>Assintomatico)</span></code></pre></div>
 </div>
+</div>
+<div id="objetivos" class="section level1">
+<h1>Objetivos</h1>
+<ul>
+<li><p>Identificar a capacidade de prevermos o resultado positivo de uma testagem para Covid-19</p></li>
+<li><p>Implementar e comparar diferentes modelos de classificação vistos na disciplina</p></li>
+</ul>
 </div>
 <div id="metodologias" class="section level1">
 <h1>Metodologias</h1>
@@ -330,18 +1403,23 @@ a.sourceLine {
 <div id="métricas-de-qualidade-dos-modelos" class="section level2">
 <h2>Métricas de qualidade dos modelos</h2>
 <p>Foram utilizadas as seguintes métricas</p>
-<p>*Sensibilidade: Probabilidade do resultado ser positivo quando de fato o individuo tem a doença.</p>
-<p>*Especificidade: Probabilidade do resultado ser negativo quando de fato o individuo não tem a doença.</p>
-<p>*Acurácia: probabilidade do teste fornecer resultados corretos, ou seja, ser positivo nos doentes e negativo nos não doentes. Expresso de outra forma é a probabilidade dos verdadeiros positivos e verdadeiros negativos como uma proporção de todos osresultados</p>
+<ul>
+<li><p>Sensibilidade: Probabilidade do resultado ser positivo quando de fato o individuo tem a doença.</p></li>
+<li><p>Especificidade: Probabilidade do resultado ser negativo quando de fato o individuo não tem a doença.</p></li>
+<li><p>Acurácia: probabilidade do teste fornecer resultados corretos, ou seja, ser positivo nos doentes e negativo nos não doentes. Expresso de outra forma é a probabilidade dos verdadeiros positivos e verdadeiros negativos como uma proporção de todos osresultados</p></li>
+</ul>
 <p>Para esse estudo, ao invés de considerarmos o “individuo ter ou não ter a doença”, teremos “o teste RT-PCR positivo ou negativo”, ficando a reinterpretação da sensibilidade e especificidade dessas métricas conforme abaixo:</p>
-<p>*Sensibilidade: Probabilidade do modelo resultar em positivo quando o teste RT-PCR foi positivo.</p>
-<p>*Especificidade: Probabilidade do modelo resultar em negativo quando o teste RT-PCR foi negativo</p>
+<ul>
+<li><p>Sensibilidade: Probabilidade do modelo resultar em positivo quando o teste RT-PCR foi positivo.</p></li>
+<li><p>Especificidade: Probabilidade do modelo resultar em negativo quando o teste RT-PCR foi negativo.</p></li>
+</ul>
 </div>
 <div id="regressão-logística" class="section level2">
 <h2>Regressão Logística</h2>
 <p>Primeiro vamos considerar o modelo completo contendo como variáveis explicativas:</p>
 <ul>
-<li><em>profissionalSaúde</em></li>
+<li>Profissional da saúde</li>
+<li>Faixa Etária</li>
 <li>Idade</li>
 <li>Sexo</li>
 <li>Assintomático</li>
@@ -351,92 +1429,228 @@ a.sourceLine {
 <span id="cb9-2"><a href="#cb9-2"></a><span class="co">#treino$resultadoTeste = relevel(treino$resultadoTeste, ref = &#39;Negativo&#39;)</span></span>
 <span id="cb9-3"><a href="#cb9-3"></a>fit.rl =<span class="st"> </span><span class="kw">glm</span>(resultadoTeste <span class="op">~</span><span class="st"> </span>., <span class="dt">family =</span> binomial,<span class="dt">data =</span> dados.treino)</span>
 <span id="cb9-4"><a href="#cb9-4"></a><span class="kw">summary</span>(fit.rl)</span></code></pre></div>
-<p>Note que todas as variáveis se mostraram significativas a um nível de <span class="math inline">\(5\%\)</span>, então serão mantidas. Aqui vamos também checar por multicolinearidade.</p>
+<p>Note que tirando profissionalSaude, todas as variáveis se mostraram significativas a um nível de <span class="math inline">\(5\%\)</span>, então serão mantidas (manteremos profissional de saúde pois sua retirada não muda as métricas, e pode ser uma informação útil). Aqui vamos também checar por multicolinearidade.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">vif</span>(fit.rl)</span></code></pre></div>
-<p>Notemos que não há evidências de multicolinearidade usando os critérios usuais (VIF maiores que 5).  Com o modelo definido, partiremos então para a definição do ponto de corte. Para isso levaremos em conta principalmente Sensibilidade, mas também Especificidade e Acurácia Total.  Para definir o ponto de corte utilizaremos os dados de treino mesmo.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>pred.rl.treino =<span class="st"> </span><span class="kw">predict</span>(fit.rl, <span class="dt">newdata =</span> dados.treino <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>resultadoTeste), <span class="dt">type =</span> <span class="st">&#39;response&#39;</span>)</span></code></pre></div>
+<p>Notemos que há evidências de multicolinearidade usando os critérios usuais (VIF maiores que 5), então retiraremos <em>idade</em> do modelo. </p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>fit.rl =<span class="st"> </span><span class="kw">glm</span>(resultadoTeste <span class="op">~</span><span class="st"> </span>., <span class="dt">family =</span> binomial,<span class="dt">data =</span> <span class="kw">subset</span>(dados.treino, <span class="dt">select =</span> <span class="op">-</span>idade))</span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="kw">summary</span>(fit.rl)</span></code></pre></div>
+<p>Com o modelo definido, partiremos então para a definição do ponto de corte. Para isso levaremos em conta principalmente Sensibilidade, mas também Especificidade e Acurácia Total.  Para definir o ponto de corte utilizaremos os dados de treino mesmo.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>pred.rl.treino =<span class="st"> </span><span class="kw">predict</span>(fit.rl, <span class="dt">newdata =</span> dados.treino <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span><span class="kw">c</span>(<span class="st">&#39;resultadoTeste&#39;</span>, <span class="st">&#39;idade&#39;</span>)), <span class="dt">type =</span> <span class="st">&#39;response&#39;</span>)</span></code></pre></div>
 <p>Abaixo podemos ver a curva ROC:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>pr.train =<span class="st"> </span>ROCR<span class="op">::</span><span class="kw">prediction</span>(pred.rl.treino, dados.treino<span class="op">$</span>resultadoTeste)</span>
-<span id="cb12-2"><a href="#cb12-2"></a>pr.train.perf =<span class="st"> </span>ROCR<span class="op">::</span><span class="kw">performance</span>(pr.train, <span class="dt">measure =</span> <span class="st">&#39;fpr&#39;</span>, <span class="dt">x.measure =</span> <span class="st">&#39;tpr&#39;</span>)</span>
-<span id="cb12-3"><a href="#cb12-3"></a><span class="kw">plot</span>(pr.train.perf)</span>
-<span id="cb12-4"><a href="#cb12-4"></a><span class="kw">abline</span>(<span class="dt">a=</span><span class="fl">0.0</span>, <span class="dt">b=</span> <span class="fl">1.0</span>, <span class="dt">lty =</span> <span class="dv">2</span>)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>pr.train =<span class="st"> </span>ROCR<span class="op">::</span><span class="kw">prediction</span>(pred.rl.treino, dados.treino<span class="op">$</span>resultadoTeste)</span>
+<span id="cb13-2"><a href="#cb13-2"></a>pr.train.perf =<span class="st"> </span>ROCR<span class="op">::</span><span class="kw">performance</span>(pr.train, <span class="dt">measure =</span> <span class="st">&#39;fpr&#39;</span>, <span class="dt">x.measure =</span> <span class="st">&#39;tpr&#39;</span>)</span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="kw">plot</span>(pr.train.perf)</span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="kw">abline</span>(<span class="dt">a=</span><span class="fl">0.0</span>, <span class="dt">b=</span> <span class="fl">1.0</span>, <span class="dt">lty =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 <p>Vamos checar também a área embaixo da curva (AUC) que criamos anteriormente.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>ROCR<span class="op">::</span><span class="kw">performance</span>(pr.train, <span class="dt">measure =</span> <span class="st">&#39;auc&#39;</span>)<span class="op">@</span>y.values</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>ROCR<span class="op">::</span><span class="kw">performance</span>(pr.train, <span class="dt">measure =</span> <span class="st">&#39;auc&#39;</span>)<span class="op">@</span>y.values</span></code></pre></div>
 <p>Agora vamos escolher o threshold.  Para isso primeiro vamos definir o “custo” de um erro de forma heterogênea: um Falso Negativo será maior que o peso de um Falso Positivo. Isso se dá pois é pior dizer para um paciente infectado que ele não está com COVID (pois isso fará com que ele não obedeça o isolamento social e a quarentena de forma tão incisiva) do que dizer para uma pessoa não-infectada que ela está com COVID (pois isso somente fará com que ela realize exames adicionais que mostrarão que a mesma não está infectada). Não alteraremos a prevalência dado que não temos o conhecimento técnico epidemiológico para tal decisão.  Para a escolha do threshold usaremos o critério de Youden com uma modificação proposta por Perkins e Schisterman, dado por: <span class="math display">\[max(sensitivities + r \times specificities)\]</span> Onde: <span class="math display">\[r = \frac{1 - prevalence}{cost * prevalence}\]</span> Sendo <em>cost</em> o custo relativo de um Falso Negativo comparado com o de um Falso Positivo e prevalence número de Positivos dividido pelo total.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(dados.treino<span class="op">$</span>resultadoTeste))</span></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>custo =<span class="st"> </span><span class="dv">3</span></span>
-<span id="cb15-2"><a href="#cb15-2"></a>prevalencia =<span class="st"> </span><span class="fl">0.3368767</span></span>
-<span id="cb15-3"><a href="#cb15-3"></a></span>
-<span id="cb15-4"><a href="#cb15-4"></a>rl.ROC &lt;-<span class="st"> </span><span class="kw">roc</span>(dados.treino<span class="op">$</span>resultadoTeste, pred.rl.treino,<span class="dt">plot=</span><span class="ot">FALSE</span>)</span>
-<span id="cb15-5"><a href="#cb15-5"></a>thre =<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">coords</span>(rl.ROC, <span class="st">&quot;best&quot;</span>, <span class="dt">ret =</span> <span class="st">&quot;threshold&quot;</span>, <span class="dt">best.weights =</span> <span class="kw">c</span>(<span class="dt">cost =</span> custo, <span class="dt">prevalence =</span>  prevalencia)))</span>
-<span id="cb15-6"><a href="#cb15-6"></a>thre</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(dados.treino<span class="op">$</span>resultadoTeste))</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>custo =<span class="st"> </span><span class="dv">3</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>prevalencia =<span class="st"> </span><span class="fl">0.347205</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a>rl.ROC &lt;-<span class="st"> </span><span class="kw">roc</span>(dados.treino<span class="op">$</span>resultadoTeste, pred.rl.treino,<span class="dt">plot=</span><span class="ot">FALSE</span>)</span>
+<span id="cb16-4"><a href="#cb16-4"></a>thre =<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">coords</span>(rl.ROC, <span class="st">&quot;best&quot;</span>, <span class="dt">ret =</span> <span class="st">&quot;threshold&quot;</span>, <span class="dt">best.weights =</span> <span class="kw">c</span>(<span class="dt">cost =</span> custo, <span class="dt">prevalence =</span>  prevalencia)))</span>
+<span id="cb16-5"><a href="#cb16-5"></a>thre</span></code></pre></div>
 <p>Agora, com o <em>threshold</em> definido, veremos então a matriz de confusão com relação aos dados de treino.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>rl.treino =<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">ifelse</span>(pred.rl.treino <span class="op">&gt;</span><span class="st"> </span>thre,<span class="st">&#39;Positivo&#39;</span>,<span class="st">&quot;Negativo&quot;</span>))</span>
-<span id="cb16-2"><a href="#cb16-2"></a><span class="kw">confusionMatrix</span>(rl.treino, <span class="dt">reference =</span> dados.treino<span class="op">$</span>resultadoTeste, <span class="dt">positive =</span> <span class="st">&#39;Positivo&#39;</span>)</span></code></pre></div>
-<p>O modelo conseguiu classificar corretamente <span class="math inline">\(83\%\)</span> (sensibilidade) das pessoas que tiveram resultado positivo no exame, e classificou corretamente <span class="math inline">\(34\%\)</span> das pessoas que tiveram resultado negativo.  Veremos também as métricas para os dados de validação, para tentar observar a performance do modelo em dados desconhecidos anteriormente.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="co">#val = dados.valid[, c(6, 14, 27, 31:40)]</span></span>
-<span id="cb17-2"><a href="#cb17-2"></a>pred.rl.val =<span class="st"> </span><span class="kw">predict</span>(fit.rl, <span class="dt">newdata =</span> dados.valid, <span class="dt">type =</span> <span class="st">&#39;response&#39;</span>)</span>
-<span id="cb17-3"><a href="#cb17-3"></a>rl.val &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">ifelse</span>(pred.rl.val <span class="op">&gt;</span><span class="st"> </span>thre,<span class="st">&quot;Positivo&quot;</span>,<span class="st">&quot;Negativo&quot;</span>))</span>
-<span id="cb17-4"><a href="#cb17-4"></a><span class="kw">confusionMatrix</span>(rl.val, <span class="dt">reference =</span> dados.valid<span class="op">$</span>resultadoTeste, <span class="dt">positive =</span> <span class="st">&#39;Positivo&#39;</span>)</span></code></pre></div>
-<p>A sensibilidade novamente é de <span class="math inline">\(78\%\)</span> enquanto a especificidade é de <span class="math inline">\(44\%\)</span>, uma performance parecida com a dos dados de treino. Por fim, veremos o desempenho do modelo nos dados de treino, que usam testes menos poderosos e, portanto, podem apresentar erros.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="co">#teste = dados.test[, c(6, 14, 27, 31:40)]</span></span>
-<span id="cb18-2"><a href="#cb18-2"></a>pred.rl.test =<span class="st"> </span><span class="kw">predict</span>(fit.rl, <span class="dt">newdata =</span> dados.test <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>resultadoTeste), <span class="dt">type =</span> <span class="st">&#39;response&#39;</span>)</span>
-<span id="cb18-3"><a href="#cb18-3"></a>rl.test =<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">ifelse</span>(pred.rl.test <span class="op">&gt;</span><span class="st"> </span>thre,<span class="st">&#39;Positivo&#39;</span>,<span class="st">&quot;Negativo&quot;</span>))</span>
-<span id="cb18-4"><a href="#cb18-4"></a><span class="kw">confusionMatrix</span>(rl.test, <span class="dt">reference =</span> dados.test<span class="op">$</span>resultadoTeste, <span class="dt">positive =</span> <span class="st">&#39;Positivo&#39;</span>)</span></code></pre></div>
-<p>Notemos, então, que a sensibilidade nos dados de teste foi de <span class="math inline">\(53\%\)</span> e a especificidade de <span class="math inline">\(67\%\)</span>. Tal resultado pode ter dois significados, e não temos informações suficientes para ver qual está certo ou se ambos estão corretos:</p>
-<ul>
-<li><p>O modelo tem uma variância grande quanto às métricas analisadas em dados não antes vistos</p></li>
-<li><p>Os testes utilizados no exame erraram e na verdade o resultado correto é o predito pelo modelo</p></li>
-</ul>
-<p>A proporção prevista para a base de testes foi:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(rl.test))</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>rl.treino =<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">ifelse</span>(pred.rl.treino <span class="op">&gt;</span><span class="st"> </span>thre,<span class="st">&#39;Positivo&#39;</span>,<span class="st">&quot;Negativo&quot;</span>))</span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="kw">confusionMatrix</span>(rl.treino, <span class="dt">reference =</span> dados.treino<span class="op">$</span>resultadoTeste, <span class="dt">positive =</span> <span class="st">&#39;Positivo&#39;</span>)</span></code></pre></div>
+<p>O modelo conseguiu classificar corretamente <span class="math inline">\(72\%\)</span> (sensibilidade) das pessoas que tiveram resultado positivo no exame, e classificou corretamente <span class="math inline">\(11\%\)</span> das pessoas que tiveram resultado negativo.  Veremos também as métricas para os dados de validação, para tentar observar a performance do modelo em dados desconhecidos anteriormente.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="co">#val = dados.valid[, c(6, 14, 27, 31:40)]</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a>pred.rl.val =<span class="st"> </span><span class="kw">predict</span>(fit.rl, <span class="dt">newdata =</span> dados.valid, <span class="dt">type =</span> <span class="st">&#39;response&#39;</span>)</span>
+<span id="cb18-3"><a href="#cb18-3"></a>rl.val &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">ifelse</span>(pred.rl.val <span class="op">&gt;</span><span class="st"> </span>thre,<span class="st">&quot;Positivo&quot;</span>,<span class="st">&quot;Negativo&quot;</span>))</span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="kw">confusionMatrix</span>(rl.val, <span class="dt">reference =</span> dados.valid<span class="op">$</span>resultadoTeste, <span class="dt">positive =</span> <span class="st">&#39;Positivo&#39;</span>)</span></code></pre></div>
+<p>A sensibilidade novamente é de <span class="math inline">\(73\%\)</span> enquanto a especificidade é de <span class="math inline">\(10\%\)</span>, uma performance parecida com a dos dados de treino. Por fim, veremos o desempenho do modelo nos dados de treino, que usam testes menos poderosos e, portanto, podem apresentar erros.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="co">#teste = dados.test[, c(6, 14, 27, 31:40)]</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a>pred.rl.test =<span class="st"> </span><span class="kw">predict</span>(fit.rl, <span class="dt">newdata =</span> dados.test <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>resultadoTeste), <span class="dt">type =</span> <span class="st">&#39;response&#39;</span>)</span>
+<span id="cb19-3"><a href="#cb19-3"></a>rl.test =<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">ifelse</span>(pred.rl.test <span class="op">&gt;</span><span class="st"> </span>thre,<span class="st">&#39;Positivo&#39;</span>,<span class="st">&quot;Negativo&quot;</span>))</span>
+<span id="cb19-4"><a href="#cb19-4"></a><span class="kw">confusionMatrix</span>(rl.test, <span class="dt">reference =</span> dados.test<span class="op">$</span>resultadoTeste, <span class="dt">positive =</span> <span class="st">&#39;Positivo&#39;</span>)</span></code></pre></div>
+<p>Notemos, então, que a sensibilidade nos dados de teste foi de <span class="math inline">\(76\%\)</span> e a especificidade de <span class="math inline">\(11\%\)</span>. A proporção prevista para a base de testes foi:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(rl.test))</span></code></pre></div>
+<pre><code>## rl.test
+##  Negativo  Positivo 
+## 0.1403462 0.8596538</code></pre>
 <p>Por fim, criaremos um vetor que resume as métricas utilizadas nos três conjuntos de dados.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>Acurácia =<span class="st"> </span><span class="kw">c</span>(<span class="fl">50.86</span>, <span class="fl">53.51</span>, <span class="fl">64.61</span>)</span>
-<span id="cb20-2"><a href="#cb20-2"></a>Sensibilidade =<span class="st"> </span><span class="kw">c</span>(<span class="fl">83.12</span>, <span class="fl">77.73</span>, <span class="fl">52.68</span>)</span>
-<span id="cb20-3"><a href="#cb20-3"></a>Especificidade =<span class="st"> </span><span class="kw">c</span>(<span class="fl">34.47</span>, <span class="fl">43.81</span>, <span class="fl">67.44</span>)</span>
-<span id="cb20-4"><a href="#cb20-4"></a>med_rl =<span class="st"> </span><span class="kw">cbind</span>(Acurácia, Sensibilidade, Especificidade)</span>
-<span id="cb20-5"><a href="#cb20-5"></a><span class="kw">rownames</span>(med_rl) =<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;Treino&#39;</span>, <span class="st">&#39;Validação&#39;</span>, <span class="st">&#39;Teste&#39;</span>)</span>
-<span id="cb20-6"><a href="#cb20-6"></a>med_rl <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb20-7"><a href="#cb20-7"></a><span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;Métricas de qualidade do modelo logistico.&quot;</span>, <span class="dt">format =</span> <span class="st">&quot;html&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb20-8"><a href="#cb20-8"></a><span class="st">  </span>kableExtra<span class="op">::</span><span class="kw">kable_styling</span>() <span class="op">%&gt;%</span></span>
-<span id="cb20-9"><a href="#cb20-9"></a><span class="st">  </span>kableExtra<span class="op">::</span><span class="kw">kable_classic_2</span>(<span class="dt">full_width =</span> F) </span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>Acurácia =<span class="st"> </span><span class="kw">c</span>(<span class="fl">31.92</span>, <span class="fl">31.54</span>, <span class="fl">27.78</span>)</span>
+<span id="cb22-2"><a href="#cb22-2"></a>Sensibilidade =<span class="st"> </span><span class="kw">c</span>(<span class="fl">72.61</span>, <span class="fl">73.01</span>, <span class="fl">76.68</span>)</span>
+<span id="cb22-3"><a href="#cb22-3"></a>Especificidade =<span class="st"> </span><span class="kw">c</span>(<span class="fl">10.28</span>, <span class="fl">09.95</span>, <span class="fl">10.82</span>)</span>
+<span id="cb22-4"><a href="#cb22-4"></a>med_rl =<span class="st"> </span><span class="kw">cbind</span>(Acurácia, Sensibilidade, Especificidade)</span>
+<span id="cb22-5"><a href="#cb22-5"></a><span class="kw">rownames</span>(med_rl) =<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;Treino&#39;</span>, <span class="st">&#39;Validação&#39;</span>, <span class="st">&#39;Teste&#39;</span>)</span>
+<span id="cb22-6"><a href="#cb22-6"></a>med_rl <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb22-7"><a href="#cb22-7"></a><span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;Métricas de qualidade do modelo logistico.&quot;</span>, <span class="dt">format =</span> <span class="st">&quot;html&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb22-8"><a href="#cb22-8"></a><span class="st">  </span>kableExtra<span class="op">::</span><span class="kw">kable_styling</span>() <span class="op">%&gt;%</span></span>
+<span id="cb22-9"><a href="#cb22-9"></a><span class="st">  </span>kableExtra<span class="op">::</span><span class="kw">kable_classic_2</span>(<span class="dt">full_width =</span> F) </span></code></pre></div>
+<table class="table lightable-classic-2" style="margin-left: auto; margin-right: auto; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Métricas de qualidade do modelo logistico.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Acurácia
+</th>
+<th style="text-align:right;">
+Sensibilidade
+</th>
+<th style="text-align:right;">
+Especificidade
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Treino
+</td>
+<td style="text-align:right;">
+31.92
+</td>
+<td style="text-align:right;">
+72.61
+</td>
+<td style="text-align:right;">
+10.28
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Validação
+</td>
+<td style="text-align:right;">
+31.54
+</td>
+<td style="text-align:right;">
+73.01
+</td>
+<td style="text-align:right;">
+9.95
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Teste
+</td>
+<td style="text-align:right;">
+27.78
+</td>
+<td style="text-align:right;">
+76.68
+</td>
+<td style="text-align:right;">
+10.82
+</td>
+</tr>
+</tbody>
+</table>
 <p>E o tempo de execução do <em>fit</em> é:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">tic</span>(<span class="st">&#39;RL fitting&#39;</span>)</span>
-<span id="cb21-2"><a href="#cb21-2"></a>fit.rl2 =<span class="st"> </span><span class="kw">glm</span>(resultadoTeste <span class="op">~</span><span class="st"> </span>., <span class="dt">family =</span> binomial,<span class="dt">data =</span> dados.treino)</span>
-<span id="cb21-3"><a href="#cb21-3"></a><span class="kw">toc</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">tic</span>(<span class="st">&#39;RL fitting&#39;</span>)</span>
+<span id="cb23-2"><a href="#cb23-2"></a>fit.rl2 =<span class="st"> </span><span class="kw">glm</span>(resultadoTeste <span class="op">~</span><span class="st"> </span>., <span class="dt">family =</span> binomial,<span class="dt">data =</span> dados.treino)</span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="kw">toc</span>()</span></code></pre></div>
 </div>
 <div id="random-forest" class="section level2">
 <h2>Random forest</h2>
 <p>Também conhecida em português por florestas aleatórias, este algoritmo estabelece regras para tomada de decisão por meio de uma estrutura similar a um fluxograma, onde condições são verificadas, e se atendida, o fluxo segue por um ramo, caso contrário, por outro, sempre levando ao próximo nó, até a finalização da árvore. Além disso, este método requer que seja escolhida variáveis para compor cada nó e isso é feito aleatório entre as variáveis disponiveis para então realizar os cálculos com base nas amostras selecionadas, definindo assim qual dessas variáveis será utilizada no primeiro nó. Para escolha da variável do próximo nó, novamente serão escolhidas outras variáveis, desconsiderando as já selecionadas anteriormente, e o processo de escolha se repetirá. Assim, a árvore será construída até o último nó.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="co">#h2o.removeAll()</span></span>
-<span id="cb22-2"><a href="#cb22-2"></a>localH2O &lt;-<span class="st"> </span><span class="kw">h2o.init</span>(<span class="dt">nthreads =</span> <span class="dv">-1</span>)</span>
-<span id="cb22-3"><a href="#cb22-3"></a><span class="kw">h2o.init</span>()</span>
-<span id="cb22-4"><a href="#cb22-4"></a></span>
-<span id="cb22-5"><a href="#cb22-5"></a><span class="co"># Criando os conjuntos no padrao H2o</span></span>
-<span id="cb22-6"><a href="#cb22-6"></a>train.h2o &lt;-<span class="st"> </span><span class="kw">as.h2o</span>(dados.treino)</span>
-<span id="cb22-7"><a href="#cb22-7"></a>valid.h2o &lt;-<span class="st"> </span><span class="kw">as.h2o</span>(dados.valid)</span>
-<span id="cb22-8"><a href="#cb22-8"></a>test.h2o &lt;-<span class="st"> </span><span class="kw">as.h2o</span>(dados.test)</span>
-<span id="cb22-9"><a href="#cb22-9"></a></span>
-<span id="cb22-10"><a href="#cb22-10"></a>ini &lt;-<span class="st"> </span><span class="kw">Sys.time</span>()</span>
-<span id="cb22-11"><a href="#cb22-11"></a>rforest.model.h2o &lt;-<span class="st"> </span><span class="kw">h2o.randomForest</span>(<span class="dt">y=</span><span class="dv">1</span>, <span class="dt">x=</span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">7</span><span class="op">:</span><span class="dv">13</span>),</span>
-<span id="cb22-12"><a href="#cb22-12"></a>                                      <span class="dt">training_frame =</span> train.h2o,</span>
-<span id="cb22-13"><a href="#cb22-13"></a>                                      <span class="dt">validation_frame =</span> valid.h2o,</span>
-<span id="cb22-14"><a href="#cb22-14"></a>                                      <span class="dt">ntrees =</span> <span class="dv">1000</span>, <span class="dt">mtries =</span> <span class="dv">3</span>, <span class="dt">max_depth =</span> <span class="dv">4</span>, <span class="dt">seed =</span> <span class="dv">1122</span>)</span>
-<span id="cb22-15"><a href="#cb22-15"></a>end &lt;-<span class="st"> </span><span class="kw">Sys.time</span>()</span>
-<span id="cb22-16"><a href="#cb22-16"></a></span>
-<span id="cb22-17"><a href="#cb22-17"></a><span class="kw">print</span>(<span class="kw">paste0</span>(<span class="st">&quot;Time spent was: &quot;</span>,<span class="kw">round</span>(end<span class="op">-</span>ini,<span class="dv">2</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="co">#h2o.removeAll()</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a>localH2O &lt;-<span class="st"> </span><span class="kw">h2o.init</span>(<span class="dt">nthreads =</span> <span class="dv">-1</span>)</span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="kw">h2o.init</span>()</span>
+<span id="cb24-4"><a href="#cb24-4"></a></span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="co"># Criando os conjuntos no padrao H2o</span></span>
+<span id="cb24-6"><a href="#cb24-6"></a>train.h2o &lt;-<span class="st"> </span><span class="kw">as.h2o</span>(dados.treino)</span>
+<span id="cb24-7"><a href="#cb24-7"></a>valid.h2o &lt;-<span class="st"> </span><span class="kw">as.h2o</span>(dados.valid)</span>
+<span id="cb24-8"><a href="#cb24-8"></a>test.h2o &lt;-<span class="st"> </span><span class="kw">as.h2o</span>(dados.test)</span>
+<span id="cb24-9"><a href="#cb24-9"></a></span>
+<span id="cb24-10"><a href="#cb24-10"></a>ini &lt;-<span class="st"> </span><span class="kw">Sys.time</span>()</span>
+<span id="cb24-11"><a href="#cb24-11"></a>rforest.model.h2o &lt;-<span class="st"> </span><span class="kw">h2o.randomForest</span>(<span class="dt">y=</span><span class="dv">1</span>, <span class="dt">x=</span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">7</span><span class="op">:</span><span class="dv">13</span>),</span>
+<span id="cb24-12"><a href="#cb24-12"></a>                                      <span class="dt">training_frame =</span> train.h2o,</span>
+<span id="cb24-13"><a href="#cb24-13"></a>                                      <span class="dt">validation_frame =</span> valid.h2o,</span>
+<span id="cb24-14"><a href="#cb24-14"></a>                                      <span class="dt">ntrees =</span> <span class="dv">1000</span>, <span class="dt">mtries =</span> <span class="dv">3</span>, <span class="dt">max_depth =</span> <span class="dv">4</span>, <span class="dt">seed =</span> <span class="dv">1122</span>)</span>
+<span id="cb24-15"><a href="#cb24-15"></a>end &lt;-<span class="st"> </span><span class="kw">Sys.time</span>()</span>
+<span id="cb24-16"><a href="#cb24-16"></a></span>
+<span id="cb24-17"><a href="#cb24-17"></a><span class="kw">print</span>(<span class="kw">paste0</span>(<span class="st">&quot;Time spent was: &quot;</span>,<span class="kw">round</span>(end<span class="op">-</span>ini,<span class="dv">2</span>)))</span></code></pre></div>
 <p>A tabela abaixo apresenta as métricas obtidas com o modelo Random Forest.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>Acurácia =<span class="st"> </span><span class="kw">c</span>(<span class="fl">49.98</span>, <span class="fl">49.71</span>, <span class="fl">42.45</span>)</span>
-<span id="cb23-2"><a href="#cb23-2"></a>Sensibilidade =<span class="st"> </span><span class="kw">c</span>(<span class="fl">81.39</span>, <span class="fl">81.44</span>, <span class="fl">79.31</span>)</span>
-<span id="cb23-3"><a href="#cb23-3"></a>Especificidade =<span class="st"> </span><span class="kw">c</span>(<span class="fl">33.27</span>, <span class="fl">33.19</span>, <span class="fl">29.67</span>)</span>
-<span id="cb23-4"><a href="#cb23-4"></a>med_rl =<span class="st"> </span><span class="kw">cbind</span>(Acurácia, Sensibilidade, Especificidade)</span>
-<span id="cb23-5"><a href="#cb23-5"></a><span class="kw">rownames</span>(med_rl) =<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;Treino&#39;</span>, <span class="st">&#39;Validação&#39;</span>, <span class="st">&#39;Teste&#39;</span>)</span>
-<span id="cb23-6"><a href="#cb23-6"></a>med_rl <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb23-7"><a href="#cb23-7"></a><span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;Métricas de qualidade do modelo Random Forest&quot;</span>, <span class="dt">format =</span> <span class="st">&quot;html&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb23-8"><a href="#cb23-8"></a><span class="st">  </span>kableExtra<span class="op">::</span><span class="kw">kable_styling</span>() <span class="op">%&gt;%</span></span>
-<span id="cb23-9"><a href="#cb23-9"></a><span class="st">  </span>kableExtra<span class="op">::</span><span class="kw">kable_classic_2</span>(<span class="dt">full_width =</span> F) </span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>Acurácia =<span class="st"> </span><span class="kw">c</span>(<span class="fl">49.98</span>, <span class="fl">49.71</span>, <span class="fl">42.45</span>)</span>
+<span id="cb25-2"><a href="#cb25-2"></a>Sensibilidade =<span class="st"> </span><span class="kw">c</span>(<span class="fl">81.39</span>, <span class="fl">81.44</span>, <span class="fl">79.31</span>)</span>
+<span id="cb25-3"><a href="#cb25-3"></a>Especificidade =<span class="st"> </span><span class="kw">c</span>(<span class="fl">33.27</span>, <span class="fl">33.19</span>, <span class="fl">29.67</span>)</span>
+<span id="cb25-4"><a href="#cb25-4"></a>med_rl =<span class="st"> </span><span class="kw">cbind</span>(Acurácia, Sensibilidade, Especificidade)</span>
+<span id="cb25-5"><a href="#cb25-5"></a><span class="kw">rownames</span>(med_rl) =<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;Treino&#39;</span>, <span class="st">&#39;Validação&#39;</span>, <span class="st">&#39;Teste&#39;</span>)</span>
+<span id="cb25-6"><a href="#cb25-6"></a>med_rl <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb25-7"><a href="#cb25-7"></a><span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;Métricas de qualidade do modelo Random Forest&quot;</span>, <span class="dt">format =</span> <span class="st">&quot;html&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb25-8"><a href="#cb25-8"></a><span class="st">  </span>kableExtra<span class="op">::</span><span class="kw">kable_styling</span>() <span class="op">%&gt;%</span></span>
+<span id="cb25-9"><a href="#cb25-9"></a><span class="st">  </span>kableExtra<span class="op">::</span><span class="kw">kable_classic_2</span>(<span class="dt">full_width =</span> F) </span></code></pre></div>
+<table class="table lightable-classic-2" style="margin-left: auto; margin-right: auto; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Métricas de qualidade do modelo Random Forest
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Acurácia
+</th>
+<th style="text-align:right;">
+Sensibilidade
+</th>
+<th style="text-align:right;">
+Especificidade
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Treino
+</td>
+<td style="text-align:right;">
+49.98
+</td>
+<td style="text-align:right;">
+81.39
+</td>
+<td style="text-align:right;">
+33.27
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Validação
+</td>
+<td style="text-align:right;">
+49.71
+</td>
+<td style="text-align:right;">
+81.44
+</td>
+<td style="text-align:right;">
+33.19
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Teste
+</td>
+<td style="text-align:right;">
+42.45
+</td>
+<td style="text-align:right;">
+79.31
+</td>
+<td style="text-align:right;">
+29.67
+</td>
+</tr>
+</tbody>
+</table>
 </div>
+</div>
+<div id="links" class="section level1">
+<h1>Links</h1>
+<ul>
+<li><p>Repositório no <a href="https://github.com/martinoni/MAE5904_grupo_7">GitHub</a></p></li>
+<li><p><a href="https://opendatasus.saude.gov.br/dataset/casos-nacionais">OpenDataSus</a></p></li>
+<li><p>Apresentação no <a href="https://docs.google.com/presentation/d/1Ky5LQXiqovJtrZP0m8oJ7JNqgoEsEi8TVnsgymq2h9s/edit#slide=id.p">google docs</a></p></li>
+</ul>
 </div>
 </section>
 
