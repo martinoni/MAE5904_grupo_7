@@ -1,0 +1,66 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{RNA}
+\author{lucas.bortolucci }
+\date{December 2020}
+
+\begin{document}
+
+\maketitle
+
+\section{Redes neurais artificiais}
+
+O modelo de redes neurais artificiais foi implementado em python com a biblioteca Keras (Tensorflow), com o acompanhamento do treino feito pelo Comet.ml. Em sua arquitetura, tratando-se de uma Rede Neural totalmente conectada, possui uma hidden layer (com 8 unidades), 137 parâmetros e função de ativação sigmoid:
+
+\begin{equation}
+\sigma(x) = \frac{1}{1 + e^x}.
+\end{equation}
+
+Outras caracteristicas da rede e de configuração de otimização são:
+
+\begin{itemize}
+	\item  Função de custo
+       	\begin{itemize}
+     		\item  Binnary Cross-Entropy
+     		\item $H_P(q) = - \frac{1}{N} \displaystyle\sum_{i=1}^{N} y_i \cdot log(p(y_i)) + (1 - y_i) \cdot log(1 - p(y_i))$
+       		\end{itemize}
+	\item  Otimizador
+       	\begin{itemize}
+     		\item Adam (Padrão)
+       		\end{itemize}
+	\item  Batch size
+       	\begin{itemize}
+     		\item  1024 indivíduos
+       		\end{itemize}
+	\item  Epochs
+       	\begin{itemize}
+     		\item  100
+       		\end{itemize}
+    \item  Método de escolha do ponto de corte
+       	\begin{itemize}
+     		\item  Youden's J statistic
+       		\end{itemize}
+\end{itemize}
+
+Com essas características os resultados obtidos foram:
+
+\begin{itemize}
+	\item  Treino
+       	\begin{itemize}
+       	    \item AUC: 0.67
+     		\item Acurácia: 0.52
+     		\item Sensibilidade: 0.81
+     		\item Especificidade: 0.40
+     	\end{itemize}
+     \item  Treino
+       	\begin{itemize}
+       	    \item Acurácia: 0.55
+     		\item Sensibilidade: 0.83
+     		\item Especificidade: 0.36
+       	\end{itemize}
+\end{itemize}
+
+Como esses resultados foram semelhantes aos do modelo de reressão logística, que possui uma melhor interpretabilidade e menor complexidade de implementação (e tempo de ajuste), acabamos por não escolher as redes neurais artificiais como modelo final do projeto.
+
+\end{document}
