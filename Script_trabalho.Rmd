@@ -272,7 +272,7 @@ car::vif(fit.rl)
 Notemos que há evidências de multicolinearidade usando os critérios usuais (VIF maiores que 5), então retiraremos _idade_ do modelo. \newline
 
 ```{r}
-fit.rl = glm(resultadoTeste ~ ., family = binomial,data = subset(dados.treino, select = -faixaetaria))
+fit.rl = glm(resultadoTeste ~ ., family = binomial,data = subset(dados.treino, select = -idade))
 summary(fit.rl)
 ```
 
@@ -312,7 +312,7 @@ prop.table(table(dados.treino$resultadoTeste))
 
 ```{r}
 custo = 3
-prevalencia = 0.347205
+prevalencia = 0.3561658
 rl.ROC <- roc(dados.treino$resultadoTeste, pred.rl.treino,plot=FALSE)
 thre = as.numeric(coords(rl.ROC, "best", ret = "threshold", best.weights = c(cost = custo, prevalence =  prevalencia)))
 thre
