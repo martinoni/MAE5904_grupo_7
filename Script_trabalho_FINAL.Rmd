@@ -3,26 +3,44 @@ title: "Testagem de COVID-19 em SP"
 subtitle: "Comparação de Modelos Preditivos"
 author: "Bruno de Castro Paul Schultze, Lucas Bortolucci, Lucas Monteiro Bianchi, Luiz Afonso Glatzl Junior, Thiago Henrique Martinoni"
 date: "12/11/2020"
+lang: pt-BR
+header-includes:
+  # - \usepackage[brazilian]{babel}
+  - \usepackage{float}
+  - \usepackage{amsmath}
+  - \usepackage{amsthm}
+  - \floatplacement{figure}{H}
+  - \usepackage{indentfirst}
+  - \setlength{\parindent}{4em}
+  - \setlength{\parskip}{1em}
+  - \usepackage{booktabs}
+  - \usepackage{dcolumn}
+  - \usepackage{bm}
+  - \usepackage{titling}
+  - \thanksmarkseries{arabic} % \thanks footnotes com numeros
+  - \usepackage[bottom]{footmisc} % corrige posição footnotes
+  - \usepackage{pdfpages}
+  - \usepackage{tocloft}
+  - \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+  - \usepackage{amssymb}
+  - \renewcommand\qedsymbol{$\blacksquare$}
+  - \usepackage{cleveref}
+  - \usepackage{subfig}
 output: 
-  prettydoc::html_pretty:
-    theme: cayman
-  toc: yes
-  fig_caption: yes
-  code_folding: show
-  keep_md: no
-  toc_depth: 2
-  toc_float: yes
-  number_sections: yes
-  self_contained: true
+  pdf_document: 
+    fig_caption: yes
+    number_sections: false
+    toc: true
+    toc_depth: 2
+#keep_tex: true
 editor_options: 
   chunk_output_type: console
+# bibliography: ref.bib
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE, results='hide')
 
-# Desligando a notação cientifica
-options(scipen = 999999)
 ```
 
 # Introdução
@@ -195,7 +213,7 @@ fatores <- colnames(dados.treino)[c(1:2,7:16)]
 variaveis <- colnames(dados.treino)[c(2,5,7:16)]
 
 ## Criando a tabela 1 - Treino
-tableOne.treino <- CreateTableOne(vars = variaveis, strata = "resultadoTeste", data = dados.treino, factorVars = fatores, addOverall = T)
+tableOne.treino <- CreateTableOne(vars = variaveis, strata = "resultadoTeste", data = dados.treino, factorVars = fatores, addOverall = T, )
 tabela1.treino <- print(tableOne.treino, showAllLevels = T, test = F, catDigits = 2,printToggle = F)
 ```
 
@@ -203,7 +221,7 @@ A tabela abaixo apresenta as características e sintomas dos individuos que inte
 
 ```{r, results='show'}
 tabela1.treino %>% 
-  knitr::kable(caption = "Estatística descritiva para cada características e sintomas dos indivíduos que compõem o conjunto de treinamento.", format = "html") %>%
+  knitr::kable(caption = "Estatística descritiva para cada características e sintomas dos indivíduos que compõem o conjunto de treinamento.") %>%
   kableExtra::kable_styling() %>%
   kableExtra::kable_classic_2(full_width = F) 
 ```
@@ -219,7 +237,7 @@ A tabela abaixo apresenta as características e sintomas dos individuos que inte
 
 ```{r, results='show'}
 tabela1.valid %>% 
-  knitr::kable(caption = "Estatística descritiva para cada características e sintomas dos indivíduos que compõem o conjunto de validação.", format = "html") %>%
+  knitr::kable(caption = "Estatística descritiva para cada características e sintomas dos indivíduos que compõem o conjunto de validação.") %>%
   kableExtra::kable_styling() %>%
   kableExtra::kable_classic_2(full_width = F) 
 ```
@@ -228,7 +246,7 @@ A tabela abaixo apresenta os "resultados" obtidos através do uso do teste rápi
 
 ```{r, results='show'}
 prop.table(table(dados.test$resultadoTeste)) %>% 
-  knitr::kable(caption = "Proporção dos resultados obtidos utilizando o teste rápido para Covid-19 (banco teste).", format = "html") %>%
+  knitr::kable(caption = "Proporção dos resultados obtidos utilizando o teste rápido para Covid-19 (banco teste).") %>%
   kableExtra::kable_styling() %>%
   kableExtra::kable_classic_2(full_width = F) 
 ```
@@ -425,7 +443,7 @@ Especificidade = c(22.37, 27.28, 18.65)
 med_rl = cbind(Acuracia, Sensibilidade, Especificidade)
 rownames(med_rl) = c('Treino', 'Validação', 'Teste')
 med_rl %>% 
-  knitr::kable(caption = "Métricas de qualidade do modelo logistico.", format = "html") %>%
+  knitr::kable(caption = "Métricas de qualidade do modelo logistico.") %>%
   kableExtra::kable_styling() %>%
   kableExtra::kable_classic_2(full_width = F) 
 ```
@@ -491,7 +509,7 @@ Especificidade = c(48.55, 50.83, 44.99)
 med_rl = cbind(Acuracia, Sensibilidade, Especificidade)
 rownames(med_rl) = c('Treino', 'Validação', 'Teste')
 med_rl %>% 
-  knitr::kable(caption = "Métricas de qualidade do modelo Random Forest", format = "html") %>%
+  knitr::kable(caption = "Métricas de qualidade do modelo Random Forest") %>%
   kableExtra::kable_styling() %>%
   kableExtra::kable_classic_2(full_width = F) 
 ```
@@ -575,7 +593,7 @@ treino_df <- data.frame(Modelo = c("Reg. Logística","Random Forest","SVM","RNA"
                         Especificidade = c(22.37,48.55,69.00,40.00))
 
 treino_df %>% 
-  knitr::kable(caption = "Métricas de qualidade nos dados de treino", format = "html") %>%
+  knitr::kable(caption = "Métricas de qualidade nos dados de treino") %>%
   kableExtra::kable_styling() %>%
   kableExtra::kable_classic_2(full_width = F)
 ```
@@ -587,7 +605,7 @@ validacao_df <- data.frame(Modelo = c("Reg. Logística","Random Forest","SVM","R
                         Especificidade = c(27.28,50.83,71.00,36.00))
 
 validacao_df %>% 
-  knitr::kable(caption = "Métricas de qualidade nos dados de validação", format = "html") %>%
+  knitr::kable(caption = "Métricas de qualidade nos dados de validação") %>%
   kableExtra::kable_styling() %>%
   kableExtra::kable_classic_2(full_width = F)
 ```
@@ -599,7 +617,7 @@ teste_df <- data.frame(Modelo = c("Reg. Logística","Random Forest","SVM","RNA")
                         Especificidade = c(18.65,44.99,67.00,0))
 
 teste_df %>% 
-  knitr::kable(caption = "Métricas de qualidade nos dados de treino", format = "html") %>%
+  knitr::kable(caption = "Métricas de qualidade nos dados de treino") %>%
   kableExtra::kable_styling() %>%
   kableExtra::kable_classic_2(full_width = F)
 
