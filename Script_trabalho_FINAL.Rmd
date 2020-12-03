@@ -1,0 +1,624 @@
+---
+title: "Testagem de COVID-19 em SP"
+subtitle: "Comparação de Modelos Preditivos"
+author: "Bruno de Castro Paul Schultze, Lucas Bortolucci, Lucas Monteiro Bianchi, Luiz Afonso Glatzl Junior, Thiago Henrique Martinoni"
+date: "12/11/2020"
+output: 
+  prettydoc::html_pretty:
+    theme: cayman
+  toc: yes
+  fig_caption: yes
+  code_folding: show
+  keep_md: no
+  toc_depth: 2
+  toc_float: yes
+  number_sections: yes
+  self_contained: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, results='hide')
+
+# Desligando a notação cientifica
+options(scipen = 999999)
+```
+
+# Introdução
+
+Durante a pandemia de Covid-19, ficou-se evidente a importância da testagem em massa, entretanto, muitos testes necessitam de equipamentos sofisticados e de execução especializada. Diante disso, os testes rápidos ganharam certa notoriedade e vem sendo largamente utilizados. Esses testes são geralmente sorológicos, capazes de identificar os anticorpos produzidos quando em contato com o antígeno. A metodologia mais utilizada por esse tipo de teste é o imunocromatografia, no qual, se consiste em produzir uma coloração através da reação entre o antígeno e o anticorpo, sendo capazes de detectar se o organismo esta porduzindo anticorpos (IgG e IgM). Embora as vantagens desse tipo de teste são claras, os testes rápidos possuem baixa sensibilidade. Podemos definir sensibilidade como a probabilidade do teste resultar em positivo quando o indíviduo de fato tem a doença. Em outras palavras, um teste com baixa sensibilidade pode resultar em um elevado número de falsos negativos, gerando estatísticas que não expressam a realidade e consequentemente dificultam o processo de tomada de decisões.
+
+Recentemente, a vigilância da COVID-19, a infecção humana causada pelo novo Coronavírus, que vem causando uma pandemia, foi incorporada na rede de vigilância da Influenza e outros vírus respiratórios. Os dados são provenientes do site [openDataSUS](https://opendatasus.saude.gov.br/dataset/bd-srag-2020). Esta página tem como finalidade disponibilizar o legado dos banco de dados (BD) epidemiológicos de SRAG, da rede de vigilância da Influenza e outros vírus respiratórios, desde o início da sua implantação (2009) até os dias atuais (2020), com a incorporação da vigilância da COVID-19.
+
+# Objetivos
+
+* Identificar a capacidade de prevermos o resultado positivo de uma testagem para Covid-19
+
+* Implementar e comparar diferentes modelos de classificação vistos na disciplina
+
+
+# Preparação dos dados
+
+## Dados
+
+A população definida para esse estudo são pessoas residentes do estado de São Paulo cujo foram diagnosticadas com SRAG-Covid 19. Segundo o Ministério da Saúde, temos as seguintes definições:
+
+Sindrome gripal (SG): Indivíduo com quadro respiratório agudo, caracterizado por pelo menos dois (2) dos seguintes sinais e sintomas: febre (mesmo que referida), calafrios, dor de garganta, dor de cabeça, tosse, coriza, distúrbios olfativos ou distúrbios gustativos.
+Observações:
+
+* Em crianças: além dos itens anteriores considera-se também obstrução nasal, na ausência de outro diagnóstico específico.
+
+* Em idosos: deve-se considerar também critérios específicos de agravamento como sincope, confusão mental, sonolência excessiva, irritabilidade e inapetência.
+
+* Na suspeita de COVID-19, a febre pode estar ausente e sintomas gastrointestinais (diarreia) podem estar presentes.
+
+Síndrome Respiratória Aguda Grave (SRAG): Indivíduo com SG que apresente: dispneia/desconforto respiratório OU pressão persistente no tórax OU saturação de $O_2$ menor que $95\%$ em ar ambiente OU coloração azulada dos lábios ou rosto.
+
+Além disso, um caso de covid-19 pode ser confirmado por:
+
+* Por critério clínico: Caso de SG ou SRAG com confirmação clínica associado a anosmia (disfunção olfativa) OU ageusia (disfunção gustatória) aguda sem outra causa pregressa.
+
+* Por critério clínico-epidemiológico: Caso de SG ou SRAG com histórico de contato próximo ou domiciliar, nos 14 dias anteriores ao aparecimento dos sinais e sintomas com caso confirmado para COVID-19.
+
+* Por critério clínico-imagem: Caso de SG ou SRAG ou óbito por SRAG que não foi possível confirmar por critério laboratorial E que apresente pelo menos uma (1) das seguintes alterações tomográficas: opacidade em vidro fosco (periférico ou multifocal) e sinal de halo reverso.
+
+\indent Observações: Em crianças: além dos itens anteriores, observar os batimentos de asa de nariz, cianose, tiragem intercostal, desidratação e inapetência;
+Para efeito de notificação no Sivep-Gripe, devem ser considerados os casos de SRAG hospitalizados ou os óbitos por SRAG independente de hospitalização.
+
+## Carregando pacotes
+
+Carregando pacotes do R. 
+
+```{r  include=FALSE}
+require(tidyverse)
+require(data.table)
+require(lubridate)
+require(tableone)
+require(Gmisc)
+require(kableExtra)
+require(randomForest)
+require(caTools)
+require(caret)
+require(doParallel)
+require(MASS)
+require(h2o)
+require(car)
+require(ROCR)
+require(pROC)
+require(tictoc)
+```
+
+## Importando o banco de dados
+
+No código abaixo estamos importando os dados e aplicando os filtros necessárias paras as realizarmos as analises. Os dados utilizados podem ser baixados em [OpenDataSus](https://opendatasus.saude.gov.br/dataset/casos-nacionais).
+
+
+```{r}
+# Esse chunk é apenas para criar o banco de dados
+# como demora um pouco, o resultado dessa saida foi salvo em dados.Rdata
+
+# files <- dir() %>% 
+#   data.frame() %>% 
+#   filter(str_detect(.,"dados-sp-")) %>% 
+#   unlist() %>% 
+#   as.vector()
+# 
+# dados <- NULL
+# for(i in length(files)){
+#   temp <- fread(files[i], header= TRUE, stringsAsFactors = T) %>% 
+#     filter(estadoIBGE == "35") %>% 
+#     filter(estado =="SÃO PAULO") %>% 
+#     filter(sexo %in% c("Masculino", "Feminino")) %>% 
+#     filter(resultadoTeste %in% c("Negativo", "Positivo")) %>% 
+#     filter(profissionalSaude %in% c("Não", "Sim")) %>% 
+#     mutate(
+#       dataNotificacao = as.Date(substr(dataNotificacao,1,10), fmt = "%Y-%m-%d")
+#     ) %>% 
+#     filter(dataNotificacao > lubridate::dmy("01-06-2020"))
+#   dados <- rbind(dados,temp)
+# }
+# save(dados, file= "dados.Rdata")
+```
+
+
+```{r}
+load("dados.Rdata")
+#write.csv(dados, file="dados.csv")
+
+# Criando os sintomeas
+dados <- dados %>% 
+  mutate(
+    resultadoTeste = factor(resultadoTeste, levels = c("Positivo", "Negativo")),
+    profissionalSaude = factor(profissionalSaude, levels = c("Não", "Sim")),
+    Assintomatico = as.factor(ifelse(grepl("Assintomático",sintomas),1,0)),
+    Coriza = as.factor(ifelse(grepl("Coriza",sintomas),1,0)),
+    Dispneia = as.factor(ifelse(grepl("Dispneia",sintomas),1,0)),
+    DistGustativos = as.factor(ifelse(grepl("Distúrbios Gustativos",sintomas),1,0)),
+    DistOlfativos = as.factor(ifelse(grepl("Distúrbios Olfativos",sintomas),1,0)),
+    DorDeCabeca = as.factor(ifelse(grepl("Dor de Cabeça",sintomas),1,0)),
+    DorDeGarganta = as.factor(ifelse(grepl("Dor de Garganta",sintomas),1,0)),
+    Febre = as.factor(ifelse(grepl("Febre",sintomas),1,0)),
+    Tosse = as.factor(ifelse(grepl("Tosse",sintomas),1,0)),
+    Outros = as.factor(ifelse(grepl("Outros",sintomas),1,0)),
+    verificacao = 
+      as.numeric(Coriza) + as.numeric(Dispneia) + as.numeric(DistGustativos) + 
+      as.numeric(DistOlfativos) + as.numeric(DorDeCabeca) + as.numeric(DorDeGarganta) + as.numeric(Febre) + as.numeric(Tosse) + as.numeric(Outros),
+    verificacao2 = case_when(
+      Assintomatico == 1 & verificacao >= 1 ~ 1,
+      TRUE ~ 0
+    ),
+    tipoTeste =  case_when(
+      grepl("RÁPIDO",tipoTeste) == TRUE ~ "Teste rápido",
+      grepl("RT-PCR",tipoTeste) == TRUE ~ "RT-PCR",
+      TRUE ~ "Outro"
+    ),
+    idade = as.integer(as.character(idade)),
+    faixaetaria = cut(idade,
+                      breaks = c(seq(0,60,10),Inf), right = F,include.lowest = T,
+                      levels = c("0 a 9", "10 a 19", "20 a 29", "30 a 39", "40 a 49", "50 a 59", ">= 60"))
+  ) %>% 
+  filter(verificacao2 !=1) %>% 
+  filter(tipoTeste != "Outro") %>% 
+  filter(idade <= 100) %>% 
+  dplyr::select(-c(verificacao,verificacao2))
+
+dados$resultadoTeste = relevel(dados$resultadoTeste, ref = 'Negativo')
+# Selecionando apenas as informações que serão utilizadas
+dados.modelo <- dados %>% 
+  filter(tipoTeste == "RT-PCR") %>% 
+  dplyr::select(resultadoTeste, sexo, faixaetaria, idade,
+                Assintomatico,Coriza, Dispneia , DistGustativos, 
+                DistOlfativos, DorDeCabeca, DorDeGarganta, 
+                Febre, Tosse, Outros, profissionalSaude, dataNotificacao)
+
+# Separar os dados de RT-PCR temporalmente, e os de teste serao os de teste rápido
+dados.modelo <- dados.modelo[order(as.Date(dados.modelo$dataNotificacao, format="%Y-%m-%d")),] %>% dplyr::select(-dataNotificacao) 
+index_max <- (3*nrow(dados.modelo))%/%4 + 1
+dados.treino <- dados.modelo[1:index_max]
+dados.valid <- dados.modelo[(index_max+1):nrow(dados.modelo)]
+dados.test <- dados %>% 
+  filter(tipoTeste != "RT-PCR") %>% 
+  dplyr::select(resultadoTeste, sexo, faixaetaria, idade,
+                Assintomatico, Coriza, Dispneia , DistGustativos, 
+                DistOlfativos, DorDeCabeca, DorDeGarganta, 
+                Febre, Tosse, Outros, profissionalSaude)
+
+# Apgando objetos desnecessarios
+rm(dados, dados.modelo, index_max)
+```
+
+
+```{r}
+fatores <- colnames(dados.treino)[c(1:2,7:16)]
+
+variaveis <- colnames(dados.treino)[c(2,5,7:16)]
+
+## Criando a tabela 1 - Treino
+tableOne.treino <- CreateTableOne(vars = variaveis, strata = "resultadoTeste", data = dados.treino, factorVars = fatores, addOverall = T)
+tabela1.treino <- print(tableOne.treino, showAllLevels = T, test = F, catDigits = 2,printToggle = F)
+```
+
+A tabela abaixo apresenta as características e sintomas dos individuos que integram o conjunto de dados de treinamento.
+
+```{r, results='show'}
+tabela1.treino %>% 
+  knitr::kable(caption = "Estatística descritiva para cada características e sintomas dos indivíduos que compõem o conjunto de treinamento.", format = "html") %>%
+  kableExtra::kable_styling() %>%
+  kableExtra::kable_classic_2(full_width = F) 
+```
+
+
+```{r}
+## Criando a tabela 1 - Validacao
+tableOne.valid <- CreateTableOne(vars = variaveis, strata = "resultadoTeste", data = dados.valid, factorVars = fatores, addOverall = T)
+tabela1.valid <- print(tableOne.valid, showAllLevels = T, test = F, catDigits = 2,printToggle = F)
+```
+
+A tabela abaixo apresenta as características e sintomas dos individuos que integram o conjunto de dados de validação. É possivel notar a semelhança com os valores obtidos na tabela anterior para o conjunto de treinamento, ressaltando que a aleatorização foi devidamente realizada.
+
+```{r, results='show'}
+tabela1.valid %>% 
+  knitr::kable(caption = "Estatística descritiva para cada características e sintomas dos indivíduos que compõem o conjunto de validação.", format = "html") %>%
+  kableExtra::kable_styling() %>%
+  kableExtra::kable_classic_2(full_width = F) 
+```
+
+A tabela abaixo apresenta os "resultados" obtidos através do uso do teste rápido. É importante ressaltar que mesmo tendo os "resultados" para o banco de teste, este trabalho desconsidera essa informação, visto que este tipo de teste é menos confiavel que o teste RT-PCR. De toda forma, essa informação é relevante para comparar com o cenário onde todos os individuos do banco teste teriam realizado o RT-PCR ao invés do teste rápido, permitindo desta forma, obter uma estimativa do quanto o teste rápido, possívelmente, submestiou os casos positivos de covid-19.
+
+```{r, results='show'}
+prop.table(table(dados.test$resultadoTeste)) %>% 
+  knitr::kable(caption = "Proporção dos resultados obtidos utilizando o teste rápido para Covid-19 (banco teste).", format = "html") %>%
+  kableExtra::kable_styling() %>%
+  kableExtra::kable_classic_2(full_width = F) 
+```
+
+
+```{r}
+# Removendo os assintomaticos do conjunto treinamento, validação e teste
+# pois essa variavel é colinear quando considerados todos os demais sintomas
+dados.treino <- dados.treino %>% dplyr::select(-Assintomatico)
+dados.valid  <-dados.valid %>% dplyr::select(-Assintomatico)
+dados.test <- dados.test %>% dplyr::select(-Assintomatico)
+```
+
+
+# Metodologias
+
+Nesta seção é apresentado o conjunto de metodologias empregadas para classificar, segundo os sintomas, se a pessoa é positivo ou negativo para covid-19.
+
+Foram utilizados os seguintes métodos:
+* Regressão Logistica
+* Random Forest
+* Suporte Vector Machine
+* Redes Neurais Artificiais
+
+## Métricas de qualidade dos modelos
+
+Foram utilizadas as seguintes métricas
+
+* Sensibilidade: Probabilidade do resultado ser positivo quando de fato o individuo tem a doença.
+
+* Especificidade: Probabilidade do resultado ser negativo quando de fato o individuo não tem a doença.
+
+* Acurácia: probabilidade do teste fornecer resultados corretos, ou seja, ser positivo nos doentes e negativo nos não doentes. Expresso de outra forma é a probabilidade dos verdadeiros positivos e verdadeiros negativos como uma proporção de todos osresultados
+
+Para esse estudo, ao invés de considerarmos o "individuo ter ou não ter a doença", teremos "o teste RT-PCR positivo ou negativo", ficando a reinterpretação da sensibilidade e especificidade dessas métricas conforme abaixo:
+
+* Sensibilidade: Probabilidade do modelo resultar em positivo quando o teste RT-PCR foi positivo.
+
+* Especificidade: Probabilidade do modelo resultar em negativo quando o teste RT-PCR foi negativo.
+
+## Regressão Logística
+
+Aqui, assumimos que o resultado do teste dadas as variáveis explicativas, $Y|x_i$, assume uma distribuição $Bernoulli$ com probabilidade $\pi_i$ de ser positivo.
+$$Y|x_i \sim Bernoulli(\pi_i)$$
+Além disso, a função de ligação é:
+$$\log\left(\frac{\pi_i}{1 - \pi_i}\right) = \beta_0 + \beta_1x_1 + \beta_2x_2 + ... +  + \beta_{13}x_{13}$$
+
+Primeiro vamos considerar o modelo completo contendo como variáveis explicativas:
+
+* Profissional da saúde
+* Faixa Etária
+* Idade
+* Sexo
+* Sintomas (uma variável indicadora para cada)
+
+```{r, results = 'show'}
+fit.rl = glm(resultadoTeste ~ ., family = binomial,data = dados.treino)
+summary(fit.rl)
+```
+
+### Seleção do Modelo
+
+Vamos usar stepAIC para tentar escolher um subconjunto das variáveis explicativas.
+
+```{r, echo = T, results = 'show'}
+fit.rl = stepAIC(fit.rl, direction = 'both', trace = 0)
+summary(fit.rl)
+```
+
+Todas as variáveis foram mantidas pelo algoritmo. Vamos então checar por multicolinearidade.
+
+```{r, echo = T, results = 'show'}
+car::vif(fit.rl)
+```
+
+Notemos que há evidências de multicolinearidade usando os critérios usuais (VIF maiores que 5), então retiraremos _idade_ do modelo. \newline
+
+```{r, echo = T, results='show'}
+fit.rl = glm(resultadoTeste ~ ., family = binomial,data = subset(dados.treino, select = -idade))
+summary(fit.rl)
+```
+
+Com o modelo definido, partiremos então para a definição do ponto de corte. Para isso levaremos em conta principalmente Sensibilidade, mas também Especificidade e Acurácia Total.
+\newline
+Para definir o ponto de corte utilizaremos os dados de treino mesmo.
+
+```{r}
+pred.rl.treino = predict(fit.rl, type = 'response')
+```
+
+Abaixo podemos ver a curva ROC:
+
+```{r, results = 'show'}
+pr.train = ROCR::prediction(pred.rl.treino, dados.treino$resultadoTeste)
+pr.train.perf = ROCR::performance(pr.train, measure = 'tpr', x.measure = 'fpr')
+plot(pr.train.perf)
+abline(a=0.0, b= 1.0, lty = 2)
+```
+
+Vamos checar também a área embaixo da curva (AUC) que criamos anteriormente.
+
+```{r, results='show'}
+ROCR::performance(pr.train, measure = 'auc')@y.values[[1]]
+```
+
+Agora vamos escolher o threshold. \newline
+Para isso primeiro vamos definir o "custo" de um erro de forma heterogênea: um Falso Negativo será maior que o peso de um Falso Positivo. Isso se dá pois é pior dizer para um paciente infectado que ele não está com COVID (pois isso fará com que ele não obedeça o isolamento social e a quarentena de forma tão incisiva) do que dizer para uma pessoa não-infectada que ela está com COVID (pois isso somente fará com que ela realize exames adicionais que mostrarão que a mesma não está infectada). Não alteraremos a prevalência dado que não temos o conhecimento técnico epidemiológico para tal decisão. \newline
+Para a escolha do threshold usaremos o critério de Youden com uma modificação proposta por Perkins e Schisterman, dado por:
+$$max(sensitivities + r \times specificities)$$
+Onde:
+$$r = \frac{1 - prevalence}{cost * prevalence}$$
+Sendo _cost_ o custo relativo de um Falso Negativo comparado com o de um Falso Positivo e prevalence número de Positivos dividido pelo total.
+```{r, results='show'}
+prop.table(table(dados.treino$resultadoTeste))
+```
+
+### Comparação variando Custo 
+Para comparar e escolher o custo, testaremos duas possibilidades ($custo = 2$ e $custo = 3$), e escolheremos o custo cujo threshold maximiza a sensibilidade nos dados de treino.
+
+Primeiro, testaremos com $custo = 2$.
+
+```{r, results='show'}
+custo = 2
+prevalencia = 0.3561658
+rl.ROC <- roc(dados.treino$resultadoTeste, pred.rl.treino,plot=FALSE)
+thre = as.numeric(coords(rl.ROC, "best", ret = "threshold", best.weights = c(cost = custo, prevalence =  prevalencia)))
+thre
+```
+
+Agora, com o _threshold_ definido, veremos então a matriz de confusão com relação aos dados de treino.
+
+```{r, results='show'}
+rl.treino = as.factor(ifelse(pred.rl.treino > thre,'Positivo',"Negativo"))
+confusionMatrix(rl.treino, reference = dados.treino$resultadoTeste, positive = 'Positivo')
+```
+
+O modelo conseguiu classificar corretamente $61\%$ (sensibilidade) das pessoas que tiveram resultado positivo no exame, e classificou corretamente $61\%$ das pessoas que tiveram resultado negativo. 
+
+Agora, com custo = 3:
+
+```{r, results='show'}
+custo = 3
+prevalencia = 0.3561658
+rl.ROC <- roc(dados.treino$resultadoTeste, pred.rl.treino,plot=FALSE)
+thre = as.numeric(coords(rl.ROC, "best", ret = "threshold", best.weights = c(cost = custo, prevalence =  prevalencia)))
+thre
+```
+
+Notemos que, como esperado, o threshold diminuiu. Veremos então a matriz de confusão com relação aos dados de treino.
+
+```{r, results='show'}
+rl.treino = as.factor(ifelse(pred.rl.treino > thre,'Positivo',"Negativo"))
+confusionMatrix(rl.treino, reference = dados.treino$resultadoTeste, positive = 'Positivo')
+```
+
+O modelo conseguiu classificar corretamente $89\%$ (sensibilidade) das pessoas que tiveram resultado positivo no exame, e classificou corretamente $22\%$ das pessoas que tiveram resultado negativo. 
+
+Escolheremos então $custo = 3$ pois, apesar de diminuir a especificidade, maximizou a capacidade do algoritmo de detectar positivos verdadeiros.
+
+
+### Avaliação do Modelo Final
+
+Vamos checar as métricas agora olhando para os dados de validação (que são como nossos dados de teste).
+
+```{r, results='show'}
+pred.rl.val = predict(fit.rl, newdata = dados.valid, type = 'response')
+rl.val <- as.factor(ifelse(pred.rl.val > thre,"Positivo","Negativo"))
+confusionMatrix(rl.val, reference = dados.valid$resultadoTeste, positive = 'Positivo')
+```
+
+A sensibilidade novamente é de $87\%$ enquanto a especificidade é de $27\%$, uma performance parecida com a dos dados de treino.
+Por fim, veremos o desempenho do modelo nos dados de treino, que usam testes menos poderosos e, portanto, podem apresentar erros.
+
+```{r, results='show'}
+pred.rl.test = predict(fit.rl, newdata = dados.test %>% dplyr::select(-resultadoTeste), type = 'response')
+rl.test = as.factor(ifelse(pred.rl.test > thre,'Positivo',"Negativo"))
+confusionMatrix(rl.test, reference = dados.test$resultadoTeste, positive = 'Positivo')
+```
+
+Notemos, então, que a sensibilidade nos dados de teste foi de $88\%$ e a especificidade de $19\%$. Apesar das métricas de teste terem sido parecidas, convem lembrar que não podemos usar as mesmas para avaliação do modelo pois os testes laboratoriais utilizados nas amostras não são tão confiáveis.
+
+A proporção prevista para a base de testes foi:
+
+```{r, results='show'}
+prop.table(table(rl.test))
+```
+
+Por fim, criaremos um vetor que resume as métricas utilizadas nos três conjuntos de dados.
+
+```{r, results='show'}
+Acuracia = c(46.15, 45.99, 36.47)
+Sensibilidade = c(89.13, 86.61, 87.89)
+Especificidade = c(22.37, 27.28, 18.65)
+med_rl = cbind(Acuracia, Sensibilidade, Especificidade)
+rownames(med_rl) = c('Treino', 'Validação', 'Teste')
+med_rl %>% 
+  knitr::kable(caption = "Métricas de qualidade do modelo logistico.", format = "html") %>%
+  kableExtra::kable_styling() %>%
+  kableExtra::kable_classic_2(full_width = F) 
+```
+
+E o tempo de execução do _fit_ é:
+
+```{r, results='show'}
+tic('RL fitting')
+fit.rl2 = glm(resultadoTeste ~ ., family = binomial,data = dados.treino %>% dplyr::select(-idade))
+toc()
+```
+
+## Random forest
+
+Também conhecida em português por florestas aleatórias, este algoritmo estabelece regras para tomada de decisão por meio de uma estrutura similar a um fluxograma, onde condições são verificadas, e se atendida, o fluxo segue por um ramo, caso contrário, por outro, sempre levando ao próximo nó, até a finalização da árvore. Além disso, este método requer que seja escolhida variáveis para compor cada nó e isso é feito aleatório entre as variáveis disponiveis para então realizar os cálculos com base nas amostras selecionadas, definindo assim qual dessas variáveis será utilizada no primeiro nó. Para escolha da variável do próximo nó, novamente serão escolhidas outras variáveis, desconsiderando as já selecionadas anteriormente, e o processo de escolha se repetirá. Assim, a árvore será construída até o último nó. 
+
+```{r, message = F}
+#h2o.removeAll()
+localH2O <- h2o.init(nthreads = -1)
+h2o.init()
+
+# Criando os conjuntos no padrao H2o
+train.h2o <- as.h2o(dados.treino)
+valid.h2o <- as.h2o(dados.valid)
+test.h2o <- as.h2o(dados.test)
+
+ini <- Sys.time()
+rforest.model.h2o <- h2o.randomForest(y=1, x=c(2,4,7:13),
+                                      training_frame = train.h2o,
+                                      validation_frame = valid.h2o,
+                                      ntrees = 1000, mtries = 3, max_depth = 4, seed = 1122)
+end <- Sys.time()
+
+print(paste0("Time spent was: ",round(end-ini,2)))
+```
+
+```{r, echo = F}
+# Metricas para o conjunto de treino
+predict.rforest <- as.data.frame(h2o.predict(rforest.model.h2o, train.h2o))
+pred_class <- predict.rforest %>% pull(predict)
+matrix_treino <- confusionMatrix(pred_class, dados.treino$resultadoTeste, positive = "Positivo")
+
+# Metricas com os dados da validacao
+predict.rforest <- as.data.frame(h2o.predict(rforest.model.h2o, valid.h2o))
+pred_class <- predict.rforest %>% pull(predict)
+matrix_valid <- confusionMatrix(pred_class, dados.valid$resultadoTeste, positive = "Positivo")
+
+# Metricas com os dados da teste
+predict.rforest <- as.data.frame(h2o.predict(rforest.model.h2o, test.h2o))
+pred_class <- predict.rforest %>% pull(predict)
+matrix_teste <- confusionMatrix(pred_class, dados.test$resultadoTeste, positive = "Positivo")
+
+# desativando o H2O
+h2o.shutdown(prompt=FALSE)
+```
+
+A tabela abaixo apresenta as métricas obtidas com o modelo Random Forest.
+
+```{r, results='show'}
+Acuracia = c(56.19, 56.98, 50.75)
+Sensibilidade = c(70.01, 70.33, 67.34)
+Especificidade = c(48.55, 50.83, 44.99)
+med_rl = cbind(Acuracia, Sensibilidade, Especificidade)
+rownames(med_rl) = c('Treino', 'Validação', 'Teste')
+med_rl %>% 
+  knitr::kable(caption = "Métricas de qualidade do modelo Random Forest", format = "html") %>%
+  kableExtra::kable_styling() %>%
+  kableExtra::kable_classic_2(full_width = F) 
+```
+## Support Vector Machines
+
+O modelo baseado em Support Vector Machines foi implementado na linguagem Python utilizando a biblioteca Scikit Learn, e na linguagem R utilizando a biblioteca E1071. No entanto, avaliando o desempenho computacional das bibliotecas, foi selecionada a linguagem Python para implementação e avaliando deste modelo.
+
+Na utilização de um Perceptron, nem sempre obtemos a melhor fronteira de decisão entre os dados. Com o SVM, buscamos obter o hiperplano separador ótimo, ou seja, uma boa relação entre margem de valor elevado e poucos erros marginais.
+
+Para um SVM Linear, podemos ter dois tipos de margens no modelo, rígida ou suave. Na margem rígida, o hiperplano separador é ajustado avaliando apenas os vetores suporte, não permitindo erros marginais. Já com margem suave, são permitidos um determinado número de amostras entre os vetores suporte, e que pode ser ajustado utilizando o parâmetro C, inversamente proporcional a margem.
+
+No entanto, em grande parte das aplicações os dados não são linearmente separáveis. Para tais situações, podemos utilizar o Kernel Trick para realizar mudanças de espaço, obtendo assim uma fronteira de decisão linear que proporcione a obtenção de um hiperplano separador ótimo.
+
+A implementação do modelo utilizada, bem como a etapa de validação e teste estão disponíveis no Github do grupo, o script denominado SVM.ipynb
+
+Os resultado obtidos foram:
+
+* Treino
+    + AUC: 0.61
+    + Acurácia: 0.59
+    + Sensibilidade: 0.50
+    + Especificidade: 0.69
+
+* Validação
+    + Acurácia: 0.65
+    + Sensibilidade: 0.51
+    + Especificidade: 0.71
+    
+## Redes Neurais Artificiais
+
+O modelo de redes neurais artificiais foi implementado em python com a biblioteca Keras (Tensorflow), com o acompanhamento do treino feito pelo Comet.ml. Em sua arquitetura, tratando-se de uma Rede Neural totalmente conectada, possui uma hidden layer (com 8 unidades), 137 parâmetros e função de ativação sigmoid:
+
+$$ \sigma(x) = \frac{1}{1 + e^x}$$  
+
+Outras caracteristicas da rede e de configuração de otimização são:
+
+* Função de custo
+    +  Binnary Cross-Entropy
+    + $H_P(q) = - \frac{1}{N} \displaystyle\sum_{i=1}^{N} y_i \cdot log(p(y_i)) + (1 - y_i) \cdot log(1 - p(y_i))$
+    
+* Otimizador
+    + Adam (Padrão)
+    
+* Batch size
+    + 1024 indivíduos
+    
+*	Epochs
+    + 100
+
+* Método de escolha do ponto de corte
+    + Youden's J statistic
+      
+A implementação do método foi feita através do Python. Os arquivos relacionados estão disponíveis no Github (cujo link está no fim desse relatório). Para mais detalhes, veja os seguintes arquivo e link:
+ 
+* RNA.ipynb (O arquivo Script_trabalho.Rmd deve ser rodado antes para o funcionamento ideal deste notebook)
+
+* https://www.comet.ml/martinoni/mae5904-rna/a0c7e454164d4b11a6cd9a4882bba9f1 (Abas contando informações imporantes: Charts; Metrics; Graphics; Confusion Matrices)
+
+Com essas características os resultados obtidos foram:
+
+* Treino
+    + AUC: 0.67
+    + Acurácia: 0.52
+    + Sensibilidade: 0.81
+    + Especificidade: 0.40
+
+* Validação
+    + Acurácia: 0.55
+    + Sensibilidade: 0.83
+    + Especificidade: 0.36
+
+# Comparações entre modelos
+
+Para realizar a comparação entre os modelos foram utilizadas 3 principais métricas: acurária, sensibilidade e especificidade.
+
+Nos dados de treino, temos:
+```{r}
+treino_df <- data.frame(Modelo = c("Reg. Logística","Random Forest","SVM","RNA"),
+                        Acuracia = c(46.15,56.19,59.00,52.00),
+                        Sensibilidade = c(89.13,70.01,50.00,81.00), 
+                        Especificidade = c(22.37,48.55,69.00,40.00))
+
+treino_df %>% 
+  knitr::kable(caption = "Métricas de qualidade nos dados de treino", format = "html") %>%
+  kableExtra::kable_styling() %>%
+  kableExtra::kable_classic_2(full_width = F)
+```
+Nos dados de validação, temos:
+```{r}
+validacao_df <- data.frame(Modelo = c("Reg. Logística","Random Forest","SVM","RNA"),
+                        Acuracia = c(45.99,56.98,65.00,55.00),
+                        Sensibilidade = c(86.61,70.33,51.00,83.00), 
+                        Especificidade = c(27.28,50.83,71.00,36.00))
+
+validacao_df %>% 
+  knitr::kable(caption = "Métricas de qualidade nos dados de validação", format = "html") %>%
+  kableExtra::kable_styling() %>%
+  kableExtra::kable_classic_2(full_width = F)
+```
+E, por fim, nos dados de teste, temos:
+```{r}
+teste_df <- data.frame(Modelo = c("Reg. Logística","Random Forest","SVM","RNA"),
+                        Acuracia = c(36.47,50.75,48.00,0),
+                        Sensibilidade = c(87.89,67.34,35.00,0), 
+                        Especificidade = c(18.65,44.99,67.00,0))
+
+teste_df %>% 
+  knitr::kable(caption = "Métricas de qualidade nos dados de treino", format = "html") %>%
+  kableExtra::kable_styling() %>%
+  kableExtra::kable_classic_2(full_width = F)
+
+```
+
+# Conclusão
+
+Os resultados foram satisfatórios no sentido de as métricas analisadas serem semelhantes para o banco de treino e de validação, mesmo que estes sejam separados em ordem temporal. Isso é um indício de que o modelo, apesar de somente poder ser ajustado com dados do presente, deve poder ser utilizado para inferências futuras.
+
+As métricas avaliadas mostraram-se relativamente próximas se comparadas entre os quatro modelos implementados, e nos casos possíveis, o ponto de corte mostrou-se importante para controlar a taxa de erros do tipo 1.
+
+A classe de modelos que mostrou-se mais adequada para a resolução do problema foi a de Regressão Logística, sendo que os resultados obtidos na nossa implementação foram muito semelhantes aos da RNA, que mostrou-se ligeiramente superior quanto ao desempenho na base de dados. Além disso, a regressão logística permite uma alta interpretabilidade de seus parâmetros, o que é uma grande vantagem para um estudo mais estruturado das associações dos fatores contabilizados na modelagem com a variável resposta (contaminação de Covid-19). Essa classe de modelos costuma possuir um menor tempo de ajuste se comparados a modelos mais complexos, e também permite o controle de taxa de erro do tipo 1 por vários métodos disponíveis, inclusive considerando pesos para cada tipo de erro para a obtenção do ponto de corte ideal, que é um dos parâmetros de inferência mais importantes em problemas que envolvem saúde pública. 
+
+# Links
+
+* Repositório no [GitHub](https://github.com/martinoni/MAE5904_grupo_7)
+
+* [OpenDataSus](https://opendatasus.saude.gov.br/dataset/casos-nacionais)
+
+* Apresentação no [google docs](https://docs.google.com/presentation/d/1Ky5LQXiqovJtrZP0m8oJ7JNqgoEsEi8TVnsgymq2h9s/edit#slide=id.p)
+
+* Informações de treino da RNA em [Comet.ml](https://www.comet.ml/martinoni/mae5904-rna/a0c7e454164d4b11a6cd9a4882bba9f1)
