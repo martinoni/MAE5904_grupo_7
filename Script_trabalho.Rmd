@@ -18,12 +18,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{css my-header-colors, echo = FALSE}
-.page-header {
-    background-color: #bfbfbf;
-}
-```
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE, results='hide')
 
@@ -31,7 +25,46 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE, results='hide')
 options(scipen = 999999)
 ```
 
+# Introdução
+
+Durante a pandemia de Covid-19, ficou-se evidente a importância da testagem em massa, entretanto, muitos testes necessitam de equipamentos sofisticados e de execução especializada. Diante disso, os testes rápidos ganharam certa notoriedade e vem sendo largamente utilizados. Esses testes são geralmente sorológicos, capazes de identificar os anticorpos produzidos quando em contato com o antígeno. A metodologia mais utilizada por esse tipo de teste é o imunocromatografia, no qual, se consiste em produzir uma coloração através da reação entre o antígeno e o anticorpo, sendo capazes de detectar se o organismo esta porduzindo anticorpos (IgG e IgM). Embora as vantagens desse tipo de teste são claras, os testes rápidos possuem baixa sensibilidade. Podemos definir sensibilidade como a probabilidade do teste resultar em positivo quando o indíviduo de fato tem a doença. Em outras palavras, um teste com baixa sensibilidade pode resultar em um elevado número de falsos negativos, gerando estatísticas que não expressam a realidade e consequentemente dificultam o processo de tomada de decisões.
+
+Recentemente, a vigilância da COVID-19, a infecção humana causada pelo novo Coronavírus, que vem causando uma pandemia, foi incorporada na rede de vigilância da Influenza e outros vírus respiratórios. Os dados são provenientes do site [openDataSUS](https://opendatasus.saude.gov.br/dataset/bd-srag-2020). Esta página tem como finalidade disponibilizar o legado dos banco de dados (BD) epidemiológicos de SRAG, da rede de vigilância da Influenza e outros vírus respiratórios, desde o início da sua implantação (2009) até os dias atuais (2020), com a incorporação da vigilância da COVID-19.
+
+# Objetivos
+
+* Identificar a capacidade de prevermos o resultado positivo de uma testagem para Covid-19
+
+* Implementar e comparar diferentes modelos de classificação vistos na disciplina
+
+
 # Preparação dos dados
+
+## Dados
+
+A população definida para esse estudo são pessoas residentes do estado de São Paulo cujo foram diagnosticadas com SRAG-Covid 19. Segundo o Ministério da Saúde, temos as seguintes definições:
+
+Sindrome gripal (SG): Indivíduo com quadro respiratório agudo, caracterizado por pelo menos dois (2) dos seguintes sinais e sintomas: febre (mesmo que referida), calafrios, dor de garganta, dor de cabeça, tosse, coriza, distúrbios olfativos ou distúrbios gustativos.
+Observações:
+
+* Em crianças: além dos itens anteriores considera-se também obstrução nasal, na ausência de outro diagnóstico específico.
+
+* Em idosos: deve-se considerar também critérios específicos de agravamento como sincope, confusão mental, sonolência excessiva, irritabilidade e inapetência.
+
+* Na suspeita de COVID-19, a febre pode estar ausente e sintomas gastrointestinais (diarreia) podem estar presentes.
+
+Síndrome Respiratória Aguda Grave (SRAG): Indivíduo com SG que apresente: dispneia/desconforto respiratório OU pressão persistente no tórax OU saturação de $O_2$ menor que $95\%$ em ar ambiente OU coloração azulada dos lábios ou rosto.
+
+Além disso, um caso de covid-19 pode ser confirmado por:
+
+* Por critério clínico: Caso de SG ou SRAG com confirmação clínica associado a anosmia (disfunção olfativa) OU ageusia (disfunção gustatória) aguda sem outra causa pregressa.
+
+* Por critério clínico-epidemiológico: Caso de SG ou SRAG com histórico de contato próximo ou domiciliar, nos 14 dias anteriores ao aparecimento dos sinais e sintomas com caso confirmado para COVID-19.
+
+* Por critério clínico-imagem: Caso de SG ou SRAG ou óbito por SRAG que não foi possível confirmar por critério laboratorial E que apresente pelo menos uma (1) das seguintes alterações tomográficas: opacidade em vidro fosco (periférico ou multifocal) e sinal de halo reverso.
+
+\indent Observações: Em crianças: além dos itens anteriores, observar os batimentos de asa de nariz, cianose, tiragem intercostal, desidratação e inapetência;
+Para efeito de notificação no Sivep-Gripe, devem ser considerados os casos de SRAG hospitalizados ou os óbitos por SRAG independente de hospitalização.
 
 ## Carregando pacotes
 
@@ -58,9 +91,8 @@ require(tictoc)
 
 ## Importando o banco de dados
 
-No código abaixo estamos importando os dados e aplicando os filtros necessárias paras as realizarmos as analises. Os dados utilizados são referentes ao Estado de São Paulo e podem ser baixados em [OpenDataSus](https://opendatasus.saude.gov.br/dataset/casos-nacionais).
+No código abaixo estamos importando os dados e aplicando os filtros necessárias paras as realizarmos as analises. Os dados utilizados podem ser baixados em [OpenDataSus](https://opendatasus.saude.gov.br/dataset/casos-nacionais).
 
-Os dados são oriundos do sistema e-SUS NOTIFICA, que foi desenvolvido para registro de casos de Síndrome Gripal suspeitos de Covid-19 e não apresentam informações de estados e municípios que utilizam sistemas próprios de notificação de casos suspeitos de Covid-19.
 
 ```{r}
 # Esse chunk é apenas para criar o banco de dados
@@ -92,7 +124,7 @@ Os dados são oriundos do sistema e-SUS NOTIFICA, que foi desenvolvido para regi
 
 ```{r}
 load("dados.Rdata")
-write.csv(dados, file="dados.csv")
+#write.csv(dados, file="dados.csv")
 
 # Criando os sintomeas
 dados <- dados %>% 
@@ -130,6 +162,7 @@ dados <- dados %>%
   filter(tipoTeste != "Outro") %>% 
   filter(idade <= 100) %>% 
   dplyr::select(-c(verificacao,verificacao2))
+
 dados$resultadoTeste = relevel(dados$resultadoTeste, ref = 'Negativo')
 # Selecionando apenas as informações que serão utilizadas
 dados.modelo <- dados %>% 
@@ -208,14 +241,6 @@ dados.treino <- dados.treino %>% dplyr::select(-Assintomatico)
 dados.valid  <-dados.valid %>% dplyr::select(-Assintomatico)
 dados.test <- dados.test %>% dplyr::select(-Assintomatico)
 ```
-# Introdução
-
-
-# Objetivos
-
-* Identificar a capacidade de prevermos o resultado positivo de uma testagem para Covid-19
-
-* Implementar e comparar diferentes modelos de classificação vistos na disciplina
 
 
 # Metodologias
